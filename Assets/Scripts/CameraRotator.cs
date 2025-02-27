@@ -1,20 +1,25 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraRotator : MonoBehaviour{
 
-    public float rotationSpeed = 20f;
-    private bool isDragging = false;
-    
+    [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float dampingFactor = 15f;
 
+    [SerializeField] private float minDistanceFromCenter = 5f;
+    [SerializeField] private float maxDistanceFromCenter = 15f;
 
     private float verticalAngle;
     private float distanceFromCenter = 10f;
 
-    private Vector3 currentRotation;
 
+
+    private Vector3 currentRotation;
+    private Vector2 rotationVelocity = Vector2.zero;
 
     private CubeInputActions inputActions;
+    private bool isDragging;
 
     private void Awake(){
         inputActions = InputManager.InputActions;
@@ -43,10 +48,21 @@ public class CameraRotator : MonoBehaviour{
 
     }
 
+    private void Update(){
+        rotationVelocity = Vector2.Lerp(rotationVelocity, Vector2.zero, Time.deltaTime * dampingFactor);
+
+        if(rotationVelocity.sqrMagnitude > 0.0001f){
+            ApplyRotation(rotationVelocity);
+        }
+    }
+
     private void OnZoom(InputAction.CallbackContext ctx){
 
         int zoom = (int)ctx.ReadValue<float>() >> -1 | 1;
-        distanceFromCenter += zoom;
+        distanceFromCenter -= zoom / 2f;
+
+        distanceFromCenter = Mathf.Clamp(distanceFromCenter, minDistanceFromCenter, maxDistanceFromCenter);
+        transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter);
 
     }
 
@@ -79,21 +95,23 @@ public class CameraRotator : MonoBehaviour{
         if(!isDragging) return;
 
         Vector2 mouseDelta = context.ReadValue<Vector2>();
+        rotationVelocity = mouseDelta * rotationSpeed;
 
-        Quaternion rotationY = Quaternion.AngleAxis(mouseDelta.x * rotationSpeed * Mathf.PI / 180f, Vector3.up);
+    }
 
-        float newVerticalAngle = verticalAngle - mouseDelta.y * rotationSpeed * Mathf.PI / 180f;
+
+    private void ApplyRotation(Vector2 delta){
+        Quaternion rotationY = Quaternion.AngleAxis(delta.x, Vector3.up);
+
+        float newVerticalAngle = verticalAngle - delta.y;
         newVerticalAngle = Mathf.Clamp(newVerticalAngle, -90f, 90f);
 
         float deltaAngle = newVerticalAngle - verticalAngle;
-        
         Quaternion rotationX = Quaternion.AngleAxis(deltaAngle, transform.right);
         verticalAngle = newVerticalAngle;
 
         transform.rotation = rotationY * rotationX * transform.rotation;
-
         transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter);
-
     }
 
 }
