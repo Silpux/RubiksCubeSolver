@@ -11,11 +11,9 @@ public class CameraRotator : MonoBehaviour{
     [SerializeField] private float maxDistanceFromCenter = 15f;
 
     private float verticalAngle;
-    private float distanceFromCenter = 10f;
+    private float distanceFromCenter;
 
 
-
-    private Vector3 currentRotation;
     private Vector2 rotationVelocity = Vector2.zero;
 
     private CubeInputActions inputActions;
@@ -24,6 +22,7 @@ public class CameraRotator : MonoBehaviour{
     private void Awake(){
         inputActions = InputManager.InputActions;
         verticalAngle = transform.rotation.eulerAngles.x;
+        distanceFromCenter = Vector3.Distance(transform.position, Vector3.zero);
     }
 
     private void OnEnable(){
