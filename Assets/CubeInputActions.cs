@@ -107,6 +107,15 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Value"",
+                    ""id"": ""061933ad-faba-419a-8681-662babfcccee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -437,6 +446,17 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d3e8d85-bc2f-4e41-bd47-8abfa1e230c0"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1033,6 +1053,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         m_Cube_Next = m_Cube.FindAction("Next", throwIfNotFound: true);
         m_Cube_Sprint = m_Cube.FindAction("Sprint", throwIfNotFound: true);
         m_Cube_Click = m_Cube.FindAction("Click", throwIfNotFound: true);
+        m_Cube_Zoom = m_Cube.FindAction("Zoom", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1121,6 +1142,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Cube_Next;
     private readonly InputAction m_Cube_Sprint;
     private readonly InputAction m_Cube_Click;
+    private readonly InputAction m_Cube_Zoom;
     public struct CubeActions
     {
         private @CubeInputActions m_Wrapper;
@@ -1134,6 +1156,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         public InputAction @Next => m_Wrapper.m_Cube_Next;
         public InputAction @Sprint => m_Wrapper.m_Cube_Sprint;
         public InputAction @Click => m_Wrapper.m_Cube_Click;
+        public InputAction @Zoom => m_Wrapper.m_Cube_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_Cube; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1170,6 +1193,9 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         private void UnregisterCallbacks(ICubeActions instance)
@@ -1201,6 +1227,9 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         public void RemoveCallbacks(ICubeActions instance)
@@ -1392,6 +1421,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         void OnNext(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
