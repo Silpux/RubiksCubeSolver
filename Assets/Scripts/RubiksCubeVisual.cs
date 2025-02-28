@@ -25,20 +25,32 @@ public class RubiksCubeVisual : MonoBehaviour{
     private float targetRotationAngle;
     private bool isRotating;
 
-    private List<GameObject> upElements = new();
-    private List<GameObject> downElements = new();
-    private List<GameObject> frontElements = new();
-    private List<GameObject> backElements = new();
-    private List<GameObject> leftElements = new();
-    private List<GameObject> rightElements = new();
+    private List<GameObject> upElements;
+    private List<GameObject> downElements;
+    private List<GameObject> frontElements;
+    private List<GameObject> backElements;
+    private List<GameObject> leftElements;
+    private List<GameObject> rightElements;
 
-    private Dictionary<GameObject, (Vector3 position, Quaternion rotation)> defaultPositionRotation = new();
+    private Dictionary<GameObject, (Vector3 position, Quaternion rotation)> defaultPositionRotation;
 
     private List<GameObject> currentRotatingElements;
 
     private Dictionary<List<GameObject>, Vector3> groupAxis;
+    private RubiksCube rubiksCube;
 
     private void Awake(){
+
+        rubiksCube = new RubiksCube();
+
+        defaultPositionRotation = new();
+
+        upElements = new();
+        downElements = new();
+        frontElements = new();
+        backElements = new();
+        leftElements = new();
+        rightElements = new();
 
         groupAxis = new Dictionary<List<GameObject>, Vector3>(){
             [upElements] = Vector3.up,
@@ -146,10 +158,7 @@ public class RubiksCubeVisual : MonoBehaviour{
     private void RotateUp(){
         
         targetRotationAngle = 90f;
-        currentRotatingElements = upElements;
-        currentRotationTime = 0;
-        currentRotation = 0;
-        isRotating = true;
+        EnableRotation(upElements);
 
     }
 
@@ -157,11 +166,15 @@ public class RubiksCubeVisual : MonoBehaviour{
     private void RotateRight(){
 
         targetRotationAngle = 90f;
-        currentRotatingElements = rightElements;
+        EnableRotation(rightElements);
+
+    }
+
+    private void EnableRotation(List<GameObject> elements){
+        currentRotatingElements = elements;
         currentRotationTime = 0;
         currentRotation = 0;
         isRotating = true;
-
     }
 
     private void SetDefaultPosition(List<GameObject> elements){
