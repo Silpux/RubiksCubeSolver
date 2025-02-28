@@ -8,14 +8,7 @@ public class RubiksCube{
 
     private Dictionary<CubeFace, int[,]> groups = new();
 
-    private readonly CubeSide[] sides = new CubeSide[6]{
-        new(CubeFace.Left),
-        new(CubeFace.Front),
-        new(CubeFace.Right),
-        new(CubeFace.Back),
-        new(CubeFace.Up),
-        new(CubeFace.Down),
-    };
+    private readonly CubeSide[] sides;
 
     private CubeSide this[CubeFace cubeFace]{
         get{
@@ -23,26 +16,43 @@ public class RubiksCube{
         }
     }
 
+    private int[,,] elementIndexes = new int[6,3,3];
+
     public RubiksCube(){
 
-        foreach(var side in sides){
+        sides = new CubeSide[6];
+        int currentElementIndex = 0;
+        for(int i = 0;i<6;i++){
+            sides[i] = new CubeSide((CubeFace)i);
+            for(int j = 0;j<3;j++){
+                for(int k = 0;k<3;k++){
+                    if(j == 1 && k == 1){
+                        elementIndexes[i,j,k] = -1;
+                        continue;
+                    }
+                    elementIndexes[i,j,k] = currentElementIndex++;
+                }
+            }
+        }
+
+        for(int i = 0;i<6;i++){
 
             int[,] group = new int[5,4];
 
-            group[0,0] = side[0,0];
-            group[0,1] = side[0,2];
-            group[0,2] = side[2,2];
-            group[0,3] = side[2,0];
+            group[0,0] = elementIndexes[i,0,0];
+            group[0,1] = elementIndexes[i,0,2];
+            group[0,2] = elementIndexes[i,2,2];
+            group[0,3] = elementIndexes[i,2,0];
 
-            group[1,0] = side[0,1];
-            group[1,1] = side[1,2];
-            group[1,2] = side[2,1];
-            group[1,3] = side[1,0];
+            group[1,0] = elementIndexes[i,0,1];
+            group[1,1] = elementIndexes[i,1,2];
+            group[1,2] = elementIndexes[i,2,1];
+            group[1,3] = elementIndexes[i,1,0];
 
-            int[,] upSide = GetUpperNeighbourSideMatrix(side.CubeFace);
-            int[,] downSide = GetDownNeighbourSideMatrix(side.CubeFace);
-            int[,] rightSide = GetRightNeighbourSideMatrix(side.CubeFace);
-            int[,] leftSide = GetLeftNeighbourSideMatrix(side.CubeFace);
+            int[,] upSide = GetUpperNeighbourSideMatrix((CubeFace)i);
+            int[,] downSide = GetDownNeighbourSideMatrix((CubeFace)i);
+            int[,] rightSide = GetRightNeighbourSideMatrix((CubeFace)i);
+            int[,] leftSide = GetLeftNeighbourSideMatrix((CubeFace)i);
 
             group[2,0] = upSide[2,0];
             group[2,1] = rightSide[0,0];
@@ -59,57 +69,97 @@ public class RubiksCube{
             group[4,2] = downSide[0,1];
             group[4,3] = leftSide[1,2];
 
-            groups[side.CubeFace] = group;
+            groups[(CubeFace)i] = group;
 
         }
+        PrintGroups();
     }
 
     private int[,] GetUpperNeighbourSideMatrix(CubeFace cubeFace){
         return cubeFace switch{
-            CubeFace.Left => this[CubeFace.Up].RotatedMatrix(-1),
-            CubeFace.Front => this[CubeFace.Up].Matrix,
-            CubeFace.Right => this[CubeFace.Up].RotatedMatrix(1),
-            CubeFace.Back => this[CubeFace.Up].RotatedMatrix(2),
-            CubeFace.Up => this[CubeFace.Back].RotatedMatrix(2),
-            CubeFace.Down => this[CubeFace.Front].Matrix,
+            CubeFace.Left => RotatedMatrix(CubeFace.Up, -1),
+            CubeFace.Front => MatrixCopy(CubeFace.Up),
+            CubeFace.Right => RotatedMatrix(CubeFace.Up, 1),
+            CubeFace.Back => RotatedMatrix(CubeFace.Up, 2),
+            CubeFace.Up => RotatedMatrix(CubeFace.Back, 2),
+            CubeFace.Down => MatrixCopy(CubeFace.Front),
             _ => throw new ArgumentException("Invalid parameter name", nameof(cubeFace)),
         };
     }
 
     private int[,] GetDownNeighbourSideMatrix(CubeFace cubeFace){
         return cubeFace switch{
-            CubeFace.Left => this[CubeFace.Down].RotatedMatrix(1),
-            CubeFace.Front => this[CubeFace.Down].Matrix,
-            CubeFace.Right => this[CubeFace.Down].RotatedMatrix(-1),
-            CubeFace.Back => this[CubeFace.Down].RotatedMatrix(2),
-            CubeFace.Up => this[CubeFace.Front].Matrix,
-            CubeFace.Down => this[CubeFace.Back].RotatedMatrix(2),
+            CubeFace.Left => RotatedMatrix(CubeFace.Down, 1),
+            CubeFace.Front => MatrixCopy(CubeFace.Down),
+            CubeFace.Right => RotatedMatrix(CubeFace.Down, -1),
+            CubeFace.Back => RotatedMatrix(CubeFace.Down, 2),
+            CubeFace.Up => MatrixCopy(CubeFace.Front),
+            CubeFace.Down => RotatedMatrix(CubeFace.Back, 2),
             _ => throw new ArgumentException("Invalid parameter name", nameof(cubeFace)),
         };
     }
 
     private int[,] GetRightNeighbourSideMatrix(CubeFace cubeFace){
         return cubeFace switch{
-            CubeFace.Left => this[CubeFace.Front].Matrix,
-            CubeFace.Front => this[CubeFace.Right].Matrix,
-            CubeFace.Right => this[CubeFace.Back].Matrix,
-            CubeFace.Back => this[CubeFace.Left].Matrix,
-            CubeFace.Up => this[CubeFace.Right].RotatedMatrix(-1),
-            CubeFace.Down => this[CubeFace.Right].RotatedMatrix(1),
+            CubeFace.Left => MatrixCopy(CubeFace.Front),
+            CubeFace.Front => MatrixCopy(CubeFace.Right),
+            CubeFace.Right => MatrixCopy(CubeFace.Back),
+            CubeFace.Back => MatrixCopy(CubeFace.Left),
+            CubeFace.Up => RotatedMatrix(CubeFace.Right, -1),
+            CubeFace.Down => RotatedMatrix(CubeFace.Right, 1),
             _ => throw new ArgumentException("Invalid parameter name", nameof(cubeFace)),
         };
     }
 
     private int[,] GetLeftNeighbourSideMatrix(CubeFace cubeFace){
         return cubeFace switch{
-            CubeFace.Left => this[CubeFace.Back].Matrix,
-            CubeFace.Front => this[CubeFace.Left].Matrix,
-            CubeFace.Right => this[CubeFace.Front].Matrix,
-            CubeFace.Back => this[CubeFace.Right].Matrix,
-            CubeFace.Up => this[CubeFace.Left].RotatedMatrix(1),
-            CubeFace.Down => this[CubeFace.Left].RotatedMatrix(-1),
+            CubeFace.Left => MatrixCopy(CubeFace.Back),
+            CubeFace.Front => MatrixCopy(CubeFace.Left),
+            CubeFace.Right => MatrixCopy(CubeFace.Front),
+            CubeFace.Back => MatrixCopy(CubeFace.Right),
+            CubeFace.Up => RotatedMatrix(CubeFace.Left, 1),
+            CubeFace.Down => RotatedMatrix(CubeFace.Left, -1),
             _ => throw new ArgumentException("Invalid parameter name", nameof(cubeFace)),
         };
+    }
+
+    private int[,] MatrixCopy(CubeFace cubeFace){
+
+        int[,] matrix = new int[3,3];
+
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                matrix[i,j] = elementIndexes[(int)cubeFace, i,j];
+            }
+        }
+
+        return matrix;
+
+    }
+
+    private int[,] RotatedMatrix(CubeFace cubeFace, int rotations){
+
+        int normalizedRotations = ((rotations % 4) + 4) % 4;
+
+        int[,] matrix = new int[3,3];
+
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                matrix[i,j] = elementIndexes[(int)cubeFace, i,j];
+            }
+        }
+
+        for(int r = 0;r<normalizedRotations;r++){
+            int[,] rotated = new int[3, 3];
+            for(int i = 0;i<3;i++){
+                for(int j = 0;j<3;j++){
+                    rotated[j, 2-i] = matrix[i, j];
+                }
+            }
+            matrix = rotated;
+        }
+
+        return matrix;
     }
 
     private void PrintGroups(){
@@ -130,64 +180,34 @@ public class RubiksCube{
 
     private class CubeSide{
 
-        private int[,] matrix = new int[3,3];
+        private CubeColor[,] colors = new CubeColor[3,3];
 
         public CubeFace CubeFace{get;}
 
-        public int this[int row, int col]{
-            get => matrix[row, col];
+        public CubeColor this[int row, int col]{
+            get => colors[row, col];
         }
 
-        public int[,] Matrix{
-            get{
-                int[,] result = new int[3,3];
-                for(int i = 0;i<3;i++){
-                    for(int j = 0;j<3;j++){
-                        result[i,j] = matrix[i,j];
-                    }
-                }
-                return result;
-            }
-        }
-
-        public CubeSide(CubeFace cubeFace) : this(((int)cubeFace - 1) * 8){
+        public CubeSide(CubeFace cubeFace){
             CubeFace = cubeFace;
-        }
-
-        public CubeSide(int startIndex){
+            CubeColor color = GetCubeColor(cubeFace);
             for(int i = 0;i<3;i++){
                 for(int j = 0;j<3;j++){
-                    if(i==1 && j==1){
-                        matrix[i,j] = -1;
-                        continue;
-                    }
-                    matrix[i,j] = startIndex++;
+                    colors[i,j] = color;
                 }
             }
         }
 
-        public CubeSide(int[,] matrix){
-            this.matrix = matrix;
-        }
-
-        public int[,] RotatedMatrix(int rotations){
-
-            int normalizedRotations = ((rotations % 4) + 4) % 4;
-
-            int[,] matrix = Matrix;
-
-            for(int r = 0;r<normalizedRotations;r++){
-                int[,] rotated = new int[3, 3];
-                for(int i = 0;i<3;i++){
-                    for(int j = 0;j<3;j++){
-                        rotated[j, 2-i] = matrix[i, j];
-                    }
-                }
-                matrix = rotated;
-            }
-
-            return matrix;
-
+        private CubeColor GetCubeColor(CubeFace cubeFace){
+            return cubeFace switch{
+                CubeFace.Left => CubeColor.Orange,
+                CubeFace.Front => CubeColor.Green,
+                CubeFace.Right => CubeColor.Red,
+                CubeFace.Back => CubeColor.Blue,
+                CubeFace.Up => CubeColor.White,
+                CubeFace.Down => CubeColor.Yellow,
+                _ => throw new ArgumentException("Wrong cubeFace parameter", nameof(cubeFace)),
+            };
         }
 
     }
@@ -195,21 +215,21 @@ public class RubiksCube{
 }
 
 public enum CubeFace{
-    None = 0,
-    Left = 1,
-    Front = 2,
-    Right = 3,
-    Back = 4,
-    Up = 5,
-    Down = 6
+    None = -1,
+    Left,
+    Front,
+    Right,
+    Back,
+    Up,
+    Down
 }
 
 public enum CubeColor{
-    None = 0,
-    Orange = 1,
-    Green = 2,
-    Red = 3,
-    Blue = 4,
-    White = 5,
-    Yellow = 6
+    None = -1,
+    Orange,
+    Green,
+    Red,
+    Blue,
+    White,
+    Yellow
 }
