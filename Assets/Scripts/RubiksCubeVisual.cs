@@ -166,7 +166,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         for(int i = 1;i>=-1;i--){
             for(int j = 1;j>=-1;j--){
 
-                AddColorElement(cubes[currentBlockIndex], (CubeFace.Left, 2-(i+1), j+1), new Vector3(-1.5f * elementScale, i * elementScale, j * elementScale), new Vector3(colorElementThickness, colorElementSide, colorElementSide));
+                AddColorElement(cubes[currentBlockIndex], (CubeFace.Left, 2-(i+1), 2-(j+1)), new Vector3(-1.5f * elementScale, i * elementScale, j * elementScale), new Vector3(colorElementThickness, colorElementSide, colorElementSide));
                 currentBlockIndex -= 1;
 
             }
@@ -200,7 +200,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         for(int j = 1;j>=-1;j--){
             for(int i = 1;i>=-1;i--){
 
-                AddColorElement(cubes[currentBlockIndex], (CubeFace.Back, 2-(j+1), i+1), new Vector3(i * elementScale, j * elementScale, 1.5f * elementScale), new Vector3(colorElementSide, colorElementSide, colorElementThickness));
+                AddColorElement(cubes[currentBlockIndex], (CubeFace.Back, 2-(j+1), 2-(i+1)), new Vector3(i * elementScale, j * elementScale, 1.5f * elementScale), new Vector3(colorElementSide, colorElementSide, colorElementThickness));
                 currentBlockIndex -= 9;
 
             }
@@ -272,6 +272,40 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(rightElements);
         cube.DoRotation(CubeFace.Right, 1);
+
+    }
+
+    [ContextMenu("Rotate Front")]
+    private void RotateFront(){
+        
+        targetRotationAngle = 90f;
+        EnableRotation(frontElements);
+        cube.DoRotation(CubeFace.Front, 1);
+
+    }
+    [ContextMenu("Rotate Left")]
+    private void RotateLeft(){
+
+        targetRotationAngle = 90f;
+        EnableRotation(leftElements);
+        cube.DoRotation(CubeFace.Left, 1);
+
+    }
+    [ContextMenu("Rotate Down")]
+    private void RotateDown(){
+
+        targetRotationAngle = 90f;
+        EnableRotation(downElements);
+        cube.DoRotation(CubeFace.Down, 1);
+
+    }
+
+    [ContextMenu("Rotate Back")]
+    private void RotateBack(){
+
+        targetRotationAngle = 90f;
+        EnableRotation(backElements);
+        cube.DoRotation(CubeFace.Back, 1);
 
     }
 
