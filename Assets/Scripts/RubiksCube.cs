@@ -8,6 +8,24 @@ public class RubiksCube{
     private Dictionary<CubeFace, (CubeFace, int, int)[,]> groups = new();
     private CubeColor[,,] cubeState = new CubeColor[6,3,3];
 
+    public CubeColor[,,] CubeState{
+        get{
+            CubeColor[,,] result = new CubeColor[6,3,3];
+            for(int i = 0;i<6;i++){
+                for(int j = 0;j<3;j++){
+                    for(int k = 0;k<3;k++){
+                        result[i,j,k] = cubeState[i,j,k];
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    public CubeColor this[CubeFace cubeFace, int row, int col]{
+        get => cubeState[(int)cubeFace, row, col];
+    }
+
     private (int,int)[,] DefaultMatrix{
         get => new (int,int)[3,3]{
             {(0,0),(0,1),(0,2)},
@@ -62,15 +80,42 @@ public class RubiksCube{
 
         }
 
-        PrintGroups();
-
     }
 
     public void DoRotation(CubeFace cubeFace, int rotations){
         rotations = ((rotations % 4) + 4) % 4;
 
+        (CubeFace cubeFace, int row, int col)[,] group = groups[cubeFace];
 
+        for(int i = 0;i<5;i++){
 
+            Span<CubeColor> cubeColors = stackalloc CubeColor[4]{
+                cubeState[(int)group[i,2].cubeFace, group[i,2].row, group[i,2].col],
+                cubeState[(int)group[i,3].cubeFace, group[i,3].row, group[i,3].col],
+                cubeState[(int)group[i,0].cubeFace, group[i,0].row, group[i,0].col],
+                cubeState[(int)group[i,1].cubeFace, group[i,1].row, group[i,1].col],
+            };
+
+            cubeState[(int)group[i,0].cubeFace, group[i,0].row, group[i,0].col] = cubeColors[(0 + rotations) % 4];
+            cubeState[(int)group[i,1].cubeFace, group[i,1].row, group[i,1].col] = cubeColors[(1 + rotations) % 4];
+            cubeState[(int)group[i,2].cubeFace, group[i,2].row, group[i,2].col] = cubeColors[(2 + rotations) % 4];
+            cubeState[(int)group[i,3].cubeFace, group[i,3].row, group[i,3].col] = cubeColors[(3 + rotations) % 4];
+
+        }
+
+        for(int k = 0;k<6;k++){
+
+            Debug.Log((CubeFace)k);
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0;i<3;i++){
+                for(int j = 0;j<3;j++){
+                    sb.Append(this[(CubeFace)k, i,j]);
+                    sb.Append(" ");
+                }
+                sb.Append("\n");
+            }
+            Debug.Log(sb.ToString());
+        }
     }
 
     private (CubeFace, (int,int)[,]) GetUpperNeighbourSideMatrix(CubeFace cubeFace){
@@ -101,7 +146,7 @@ public class RubiksCube{
         return cubeFace switch{
             CubeFace.Left => (CubeFace.Front, DefaultMatrix),
             CubeFace.Front => (CubeFace.Right, DefaultMatrix),
-            CubeFace.Right => (CubeFace.Down, DefaultMatrix),
+            CubeFace.Right => (CubeFace.Back, DefaultMatrix),
             CubeFace.Back => (CubeFace.Left, DefaultMatrix),
             CubeFace.Up => (CubeFace.Right, RotatedMatrix(-1)),
             CubeFace.Down => (CubeFace.Right, RotatedMatrix(1)),
