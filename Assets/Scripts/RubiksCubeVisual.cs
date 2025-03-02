@@ -86,6 +86,8 @@ public class RubiksCubeVisual : MonoBehaviour{
                     cube.transform.position = new Vector3(i * elementScale,j * elementScale,k * elementScale);
                     cube.transform.localScale = new Vector3(elementScale, elementScale, elementScale);
 
+                    BoxCollider collider = cube.GetComponent<BoxCollider>();
+
                     cubes.Add(cube);
 
                     defaultPositionRotation[cube] = (cube.transform.position, cube.transform.rotation);
@@ -107,32 +109,48 @@ public class RubiksCubeVisual : MonoBehaviour{
                             sb.Append("Corner");
                             cube.transform.SetParent(cornersParent.transform);
                             break;
+                        default:
+                            sb.Append("Center");
+                            cube.transform.SetParent(transform);
+                            break;
                     }
 
                     if(i == -1){
                         leftElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
+                        collider.center = new Vector3(collider.center.x - colorElementThickness / 4, collider.center.y, collider.center.z);
                         sb.Append(" Left");
                     }
                     else if(i == 1){
                         rightElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
+                        collider.center = new Vector3(collider.center.x + colorElementThickness / 4, collider.center.y, collider.center.z);
                         sb.Append(" Right");
                     }
 
                     if(j == -1){
                         downElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
+                        collider.center = new Vector3(collider.center.x, collider.center.y - colorElementThickness / 4, collider.center.z);
                         sb.Append(" Down");
                     }
                     else if(j == 1){
                         upElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
+                        collider.center = new Vector3(collider.center.x, collider.center.y + colorElementThickness / 4, collider.center.z);
                         sb.Append(" Up");
                     }
 
                     if(k == -1){
                         frontElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
+                        collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z - colorElementThickness / 4);
                         sb.Append(" Front");
                     }
                     else if(k == 1){
                         backElements.Add(cube);
+                        collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
+                        collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z + colorElementThickness / 4);
                         sb.Append(" Back");
                     }
 
@@ -143,6 +161,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         }
 
         void AddColorElement(GameObject cube, (CubeFace cubeFace, int row, int col) cubePlace, Vector3 position, Vector3 scale){
+
             GameObject colorElement = GameObject.CreatePrimitive(PrimitiveType.Cube);
             colorElement.transform.position = position;
             colorElement.transform.localScale = scale;
