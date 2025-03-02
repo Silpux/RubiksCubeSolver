@@ -8,20 +8,6 @@ public class RubiksCube{
     private Dictionary<CubeFace, (CubeFace, int, int)[,]> groups = new();
     private CubeColor[,,] cubeState = new CubeColor[6,3,3];
 
-    public CubeColor[,,] CubeState{
-        get{
-            CubeColor[,,] result = new CubeColor[6,3,3];
-            for(int i = 0;i<6;i++){
-                for(int j = 0;j<3;j++){
-                    for(int k = 0;k<3;k++){
-                        result[i,j,k] = cubeState[i,j,k];
-                    }
-                }
-            }
-            return result;
-        }
-    }
-
     public CubeColor this[CubeFace cubeFace, int row, int col]{
         get => cubeState[(int)cubeFace, row, col];
     }
@@ -103,19 +89,6 @@ public class RubiksCube{
 
         }
 
-        for(int k = 0;k<6;k++){
-
-            Debug.Log((CubeFace)k);
-            StringBuilder sb = new StringBuilder();
-            for(int i = 0;i<3;i++){
-                for(int j = 0;j<3;j++){
-                    sb.Append(this[(CubeFace)k, i,j]);
-                    sb.Append(" ");
-                }
-                sb.Append("\n");
-            }
-            Debug.Log(sb.ToString());
-        }
     }
 
     private (CubeFace, (int,int)[,]) GetUpperNeighbourSideMatrix(CubeFace cubeFace){
