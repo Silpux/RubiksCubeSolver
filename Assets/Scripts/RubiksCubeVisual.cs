@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class RubiksCubeVisual : MonoBehaviour{
@@ -37,16 +36,20 @@ public class RubiksCubeVisual : MonoBehaviour{
     private Dictionary<GameObject, (Vector3 position, Quaternion rotation)> defaultPositionRotation;
 
     private List<GameObject> currentRotatingElements;
+    private CubeFace currentRotatingFace;
 
     private Dictionary<List<GameObject>, Vector3> groupAxis;
     private RubiksCube cube;
 
     private MeshRenderer[,,] colorElements;
 
+    private List<(CubeFace cubeFace, int row, int col)>[] updateColorElements;
+
     private void Awake(){
 
         cube = new RubiksCube();
         colorElements = new MeshRenderer[6,3,3];
+        updateColorElements = new List<(CubeFace cubeFace, int row, int col)>[6]{new(21),new(21),new(21),new(21),new(21),new(21)};
 
         defaultPositionRotation = new();
 
@@ -148,16 +151,56 @@ public class RubiksCubeVisual : MonoBehaviour{
             colorElement.transform.SetParent(cube.transform);
             colorElement.transform.name = cubePlace.cubeFace.ToString();
             colorElements[(int)cubePlace.cubeFace, cubePlace.row, cubePlace.col] = meshRenderer;
+
+            updateColorElements[(int)cubePlace.cubeFace].Add(cubePlace);
+
+            switch(cubePlace.cubeFace){
+                case CubeFace.Left:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Back].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    break;
+                case CubeFace.Front:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Left].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Right].Add(cubePlace);
+                    break;
+                case CubeFace.Right:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Front].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Back].Add(cubePlace);
+                    break;
+                case CubeFace.Back:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Right].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Left].Add(cubePlace);
+                    break;
+                case CubeFace.Up:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Back].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Front].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Left].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Right].Add(cubePlace);
+                    break;
+                case CubeFace.Down:
+                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Front].Add(cubePlace);
+                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Left].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Right].Add(cubePlace);
+                    break;
+                default:
+                    throw new ArgumentException("Cube face parameter is wrong", nameof(cubePlace.cubeFace));
+            }
         }
 
         int currentBlockIndex = 6;
-
         for(int j = 1;j>=-1;j--){
             for(int i = -1;i<=1;i++){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Front, 2-(j+1), i+1), new Vector3(i * elementScale, j * elementScale, -1.5f * elementScale), new Vector3(colorElementSide, colorElementSide, colorElementThickness));
                 currentBlockIndex += 9;
-
             }
             currentBlockIndex -= 30;
         }
@@ -165,20 +208,16 @@ public class RubiksCubeVisual : MonoBehaviour{
         currentBlockIndex = 8;
         for(int i = 1;i>=-1;i--){
             for(int j = 1;j>=-1;j--){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Left, 2-(i+1), 2-(j+1)), new Vector3(-1.5f * elementScale, i * elementScale, j * elementScale), new Vector3(colorElementThickness, colorElementSide, colorElementSide));
                 currentBlockIndex -= 1;
-
             }
         }
 
         currentBlockIndex = 24;
         for(int i = 1;i>=-1;i--){
             for(int j = -1;j<=1;j++){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Right, 2-(i+1), j+1), new Vector3(1.5f * elementScale, i * elementScale, j * elementScale), new Vector3(colorElementThickness, colorElementSide, colorElementSide));
                 currentBlockIndex += 1;
-
             }
             currentBlockIndex -= 6;
         }
@@ -186,40 +225,31 @@ public class RubiksCubeVisual : MonoBehaviour{
         currentBlockIndex = 8;
         for(int j = 1;j>=-1;j--){
             for(int i = -1;i<=1;i++){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Up, 2-(j+1), i+1), new Vector3(i * elementScale, 1.5f * elementScale, j * elementScale), new Vector3(colorElementSide, colorElementThickness, colorElementSide));
                 currentBlockIndex += 9;
-
             }
             currentBlockIndex -= 28;
         }
 
-
         currentBlockIndex = 26;
-
         for(int j = 1;j>=-1;j--){
             for(int i = 1;i>=-1;i--){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Back, 2-(j+1), 2-(i+1)), new Vector3(i * elementScale, j * elementScale, 1.5f * elementScale), new Vector3(colorElementSide, colorElementSide, colorElementThickness));
                 currentBlockIndex -= 9;
-
             }
             currentBlockIndex += 24;
         }
 
-
         currentBlockIndex = 0;
         for(int j = -1;j<=1;j++){
             for(int i = -1;i<=1;i++){
-
                 AddColorElement(cubes[currentBlockIndex], (CubeFace.Down, j+1, i+1), new Vector3(i * elementScale, -1.5f * elementScale, j * elementScale), new Vector3(colorElementSide, colorElementThickness, colorElementSide));
                 currentBlockIndex += 9;
-
             }
             currentBlockIndex -= 26;
         }
 
-            UpdateVisual();
+        UpdateVisual();
 
     }
 
@@ -263,6 +293,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(upElements);
         cube.DoRotation(CubeFace.Up, 1);
+        currentRotatingFace = CubeFace.Up;
 
     }
 
@@ -272,6 +303,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(rightElements);
         cube.DoRotation(CubeFace.Right, 1);
+        currentRotatingFace = CubeFace.Right;
 
     }
 
@@ -281,6 +313,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(frontElements);
         cube.DoRotation(CubeFace.Front, 1);
+        currentRotatingFace = CubeFace.Front;
 
     }
     [ContextMenu("Rotate Left")]
@@ -289,6 +322,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(leftElements);
         cube.DoRotation(CubeFace.Left, 1);
+        currentRotatingFace = CubeFace.Left;
 
     }
     [ContextMenu("Rotate Down")]
@@ -297,6 +331,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(downElements);
         cube.DoRotation(CubeFace.Down, 1);
+        currentRotatingFace = CubeFace.Down;
 
     }
 
@@ -306,6 +341,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         targetRotationAngle = 90f;
         EnableRotation(backElements);
         cube.DoRotation(CubeFace.Back, 1);
+        currentRotatingFace = CubeFace.Back;
 
     }
 
@@ -334,6 +370,14 @@ public class RubiksCubeVisual : MonoBehaviour{
             }
         }
     }
+    private void UpdateVisual(CubeFace rotatedCubeFace){
+        for(int i = 0;i<updateColorElements[(int)rotatedCubeFace].Count;i++){
+            int cubeFace = (int)updateColorElements[(int)rotatedCubeFace][i].cubeFace;
+            int row = (int)updateColorElements[(int)rotatedCubeFace][i].row;
+            int col = (int)updateColorElements[(int)rotatedCubeFace][i].col;
+            colorElements[cubeFace, row, col].material = GetColorMaterial(cube[(CubeFace)cubeFace, row, col]);
+        }
+    }
 
     private void Update(){
         if(isRotating){
@@ -343,7 +387,7 @@ public class RubiksCubeVisual : MonoBehaviour{
             if(currentRotationProgress >= 1){
                 isRotating = false;
                 SetDefaultPosition(currentRotatingElements);
-                UpdateVisual();
+                UpdateVisual(currentRotatingFace);
             }
             else{
                 float angle = Mathf.Lerp(0f, targetRotationAngle, currentRotationProgress) - currentRotation;
