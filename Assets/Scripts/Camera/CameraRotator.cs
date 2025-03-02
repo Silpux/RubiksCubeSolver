@@ -13,38 +13,24 @@ public class CameraRotator : MonoBehaviour{
     private float verticalAngle;
     private float distanceFromCenter;
 
+    private CameraInputHandler cameraInputHandler;
 
     private Vector2 rotationVelocity = Vector2.zero;
 
-    private CubeInputActions inputActions;
-    private bool isDragging;
-
     private void Awake(){
-        inputActions = InputManager.InputActions;
+        cameraInputHandler = GetComponent<CameraInputHandler>();
         verticalAngle = transform.rotation.eulerAngles.x;
         distanceFromCenter = Vector3.Distance(transform.position, Vector3.zero);
     }
 
     private void OnEnable(){
-
-        inputActions.Cube.Click.started += MouseClickStarted;
-        inputActions.Cube.Click.canceled += MouseClickCanceled;
-        inputActions.Cube.Look.performed += OnMove;
-        inputActions.Cube.Zoom.performed += OnZoom;
-
-        inputActions.Cube.Enable();
-
+        cameraInputHandler.OnCameraMove += Move;
+        cameraInputHandler.OnZoom += Zoom;
     }
 
     private void OnDisable(){
-
-        inputActions.Cube.Click.started -= MouseClickStarted;
-        inputActions.Cube.Click.canceled -= MouseClickCanceled;
-        inputActions.Cube.Look.performed -= OnMove;
-        inputActions.Cube.Zoom.performed -= OnZoom;
-
-        inputActions.Cube.Disable();
-
+        cameraInputHandler.OnCameraMove -= Move;
+        cameraInputHandler.OnZoom -= Zoom;
     }
 
     private void Update(){
@@ -55,46 +41,17 @@ public class CameraRotator : MonoBehaviour{
         }
     }
 
-    private void OnZoom(InputAction.CallbackContext ctx){
+    private void Zoom(int zoom){
 
-        int zoom = (int)ctx.ReadValue<float>() >> -1 | 1;
         distanceFromCenter -= zoom / 2f;
-
         distanceFromCenter = Mathf.Clamp(distanceFromCenter, minDistanceFromCenter, maxDistanceFromCenter);
         transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter);
 
     }
 
-    private void MouseClickStarted(InputAction.CallbackContext ctx){
+    public void Move(Vector2 value){
 
-        Vector2 screenPosition = Pointer.current.position.ReadValue();
-        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-
-        if(Physics.Raycast(ray, out RaycastHit hitInfo, 50f)){
-
-            isDragging = false;
-
-        }
-        else{
-
-            isDragging = true;
-
-        }
-
-    }
-
-    private void MouseClickCanceled(InputAction.CallbackContext ctx){
-
-        isDragging = false;
-
-    }
-
-    public void OnMove(InputAction.CallbackContext context){
-
-        if(!isDragging) return;
-
-        Vector2 mouseDelta = context.ReadValue<Vector2>();
-        rotationVelocity = mouseDelta * rotationSpeed;
+        rotationVelocity = value * rotationSpeed;
 
     }
 
