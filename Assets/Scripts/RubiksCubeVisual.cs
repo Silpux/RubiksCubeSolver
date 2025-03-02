@@ -20,6 +20,8 @@ public class RubiksCubeVisual : MonoBehaviour{
     [SerializeField] private float rotationDuration;
     [SerializeField] private AnimationCurve rotateAnimationCurve;
 
+    private const string CUBE_LAYER_NAME = "Cube";
+
     private float currentRotationTime;
     private float currentRotation;
 
@@ -85,6 +87,8 @@ public class RubiksCubeVisual : MonoBehaviour{
                     GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     cube.transform.position = new Vector3(i * elementScale,j * elementScale,k * elementScale);
                     cube.transform.localScale = new Vector3(elementScale, elementScale, elementScale);
+
+                    cube.layer = LayerMask.NameToLayer(CUBE_LAYER_NAME);
 
                     BoxCollider collider = cube.GetComponent<BoxCollider>();
 
@@ -170,6 +174,8 @@ public class RubiksCubeVisual : MonoBehaviour{
             colorElement.transform.SetParent(cube.transform);
             colorElement.transform.name = cubePlace.cubeFace.ToString();
             colorElements[(int)cubePlace.cubeFace, cubePlace.row, cubePlace.col] = meshRenderer;
+
+            colorElement.layer = LayerMask.NameToLayer(CUBE_LAYER_NAME);
 
             updateColorElements[(int)cubePlace.cubeFace].Add(cubePlace);
 
