@@ -214,23 +214,3 @@ public class RubiksCube{
     }
 
 }
-
-public enum CubeFace{
-    None = -1,
-    Left,
-    Front,
-    Right,
-    Back,
-    Up,
-    Down
-}
-
-public enum CubeColor{
-    None = -1,
-    Orange,
-    Green,
-    Red,
-    Blue,
-    White,
-    Yellow
-}
