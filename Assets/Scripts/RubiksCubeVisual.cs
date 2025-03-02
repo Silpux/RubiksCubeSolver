@@ -159,7 +159,7 @@ public class RubiksCubeVisual : MonoBehaviour{
                     if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
                     else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
                     if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Back].Add(cubePlace);
-                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Front].Add(cubePlace);
                     break;
                 case CubeFace.Front:
                     if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
