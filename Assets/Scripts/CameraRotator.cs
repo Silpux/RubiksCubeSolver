@@ -48,7 +48,7 @@ public class CameraRotator : MonoBehaviour{
     }
 
     private void Update(){
-        rotationVelocity = Vector2.Lerp(rotationVelocity, Vector2.zero, Time.deltaTime * dampingFactor);
+        rotationVelocity = Vector2.Lerp(Vector2.zero, rotationVelocity, Time.deltaTime * dampingFactor);
 
         if(rotationVelocity.sqrMagnitude > 0.0001f){
             ApplyRotation(rotationVelocity);

@@ -269,8 +269,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3de12012365c47c40b377a1e84b0d571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 0.75
-  dampingFactor: 30
+  rotationSpeed: 0.85
+  dampingFactor: 40
   minDistanceFromCenter: 6
   maxDistanceFromCenter: 15
 --- !u!1 &410087039
