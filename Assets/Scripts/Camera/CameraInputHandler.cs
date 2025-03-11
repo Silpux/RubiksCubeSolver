@@ -8,6 +8,14 @@ public class CameraInputHandler : MonoBehaviour{
     private int cubeLayerMask;
 
     private bool isDragging;
+    private bool isHoldingCube;
+
+    [SerializeField] private float radiusToMove;
+
+    private Vector2 startMoveClickCoords;
+
+    private Vector3 planeNormal;
+    private Vector3 initialClickPosition;
 
     public event Action<Vector2> OnCameraMove;
     public event Action<int> OnZoom;
@@ -42,22 +50,16 @@ public class CameraInputHandler : MonoBehaviour{
     private void MouseClickStarted(InputAction.CallbackContext ctx){
 
         Vector2 screenPosition = Pointer.current.position.ReadValue();
+        startMoveClickCoords = screenPosition;
+
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
 
         if(Physics.Raycast(ray, out RaycastHit hitInfo, 50f, cubeLayerMask)){
 
-            Debug.DrawLine(hitInfo.point, hitInfo.point + hitInfo.normal, Color.red, 2f);
+            isHoldingCube = true;
 
-            Matrix4x4 camMatrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-            Matrix4x4 camToWorld = camMatrix.inverse;
-
-            Vector3 directionCamSpace = camToWorld.MultiplyVector(hitInfo.normal);
-
-            Vector2 projectedDirection = new Vector2(directionCamSpace.x, directionCamSpace.y);
-
-            float angle = Mathf.Atan2(projectedDirection.y, projectedDirection.x) * Mathf.Rad2Deg;
-
-            Debug.Log(angle);
+            planeNormal = hitInfo.normal;
+            initialClickPosition = hitInfo.point;
 
         }
         else{
@@ -75,12 +77,52 @@ public class CameraInputHandler : MonoBehaviour{
     
     public void Move(InputAction.CallbackContext context){
 
-        if(!isDragging) return;
-        OnCameraMove?.Invoke(context.ReadValue<Vector2>());
+        if(isDragging){
+            OnCameraMove?.Invoke(context.ReadValue<Vector2>());
+            return;
+        }
+
+        if(isHoldingCube){
+
+            Vector2 screenPosition = Pointer.current.position.ReadValue();
+
+            if(Vector2.Distance(startMoveClickCoords, screenPosition) > radiusToMove){
+
+                Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+
+                float denominator = Vector3.Dot(planeNormal, ray.direction);
+                if(Mathf.Abs(denominator) < 1e-6f){
+                    return;
+                }
+
+                float t = Vector3.Dot(planeNormal, initialClickPosition - ray.origin) / denominator;
+
+                if(t<0){
+                    return;
+                }
+
+                Vector3 intersectPoint = ray.origin + t * ray.direction - initialClickPosition;
+
+                Vector3 resultDirection = new Vector3(Mathf.Sign(intersectPoint.x),0,0);
+
+                if(Mathf.Abs(intersectPoint.y) > Mathf.Abs(intersectPoint.x)){
+                    resultDirection = new Vector3(0,Mathf.Sign(intersectPoint.y),0);
+                }
+
+                if(Mathf.Abs(intersectPoint.z) > Mathf.Abs(intersectPoint.y) && Mathf.Abs(intersectPoint.z) > Mathf.Abs(intersectPoint.x)){
+                    resultDirection = new Vector3(0,0,Mathf.Sign(intersectPoint.z));
+                }
+
+                Debug.Log(resultDirection);
+
+            }
+
+        }
 
     }
 
     private void MouseClickCanceled(InputAction.CallbackContext ctx){
         isDragging = false;
+        isHoldingCube = false;
     }
 }
