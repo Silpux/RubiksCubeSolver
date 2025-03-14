@@ -12,6 +12,11 @@ public class ColorElement : MonoBehaviour{
         private set;
     }
 
+    public void AddMoveElement(Vector3 direction, CubeFace cubeFace, bool clockwise){
+        RotateDirections.Add((direction, cubeFace, clockwise));
+        RotateDirections.Add((direction * -1, cubeFace, !clockwise));
+    }
+
     private void Awake(){
         RotateDirections = new List<(Vector3 direction, CubeFace cubeFace, bool clockwise)>();
     }

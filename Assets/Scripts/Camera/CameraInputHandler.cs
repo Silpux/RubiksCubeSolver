@@ -66,6 +66,9 @@ public class CameraInputHandler : MonoBehaviour{
             if(hitInfo.collider.gameObject.TryGetComponent<ColorElement>(out ColorElement colorElement)){
                 currentColorElement = colorElement;
             }
+            else{
+                currentColorElement = null;
+            }
 
         }
         else{
