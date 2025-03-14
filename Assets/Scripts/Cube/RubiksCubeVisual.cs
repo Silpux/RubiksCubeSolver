@@ -28,7 +28,7 @@ public class RubiksCubeVisual : MonoBehaviour{
     private float currentRotation;
 
     private float targetRotationAngle;
-    private bool isRotating;
+    public bool IsRotating{get; private set;}
 
     private List<GameObject> upElements;
     private List<GameObject> downElements;
@@ -160,7 +160,10 @@ public class RubiksCubeVisual : MonoBehaviour{
             colorElement.Visual = this;
             colorElement.transform.localScale = scale;
             MeshRenderer meshRenderer = colorElement.GetComponent<MeshRenderer>();
-            meshRenderer.material = GetFaceMaterial(cubePlace.cubeFace);
+
+            Material colorElementMaterial = GetFaceMaterial(cubePlace.cubeFace);
+            meshRenderer.material = colorElementMaterial;
+
             colorElement.transform.name = cubePlace.cubeFace.ToString();
             colorElements[(int)cubePlace.cubeFace, cubePlace.row, cubePlace.col] = meshRenderer;
 
@@ -435,7 +438,7 @@ public class RubiksCubeVisual : MonoBehaviour{
     }
 
     public void DoRotation(CubeFace cubeFace, bool clockwise){
-        if(!isRotating){
+        if(!IsRotating){
             targetRotationAngle = clockwise ? 90f : -90f;
             EnableRotation(cubeFace);
             cube.DoRotation(cubeFace, clockwise ? 1 : -1);
@@ -447,7 +450,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         currentRotatingElements = elements;
         currentRotationTime = 0;
         currentRotation = 0;
-        isRotating = true;
+        IsRotating = true;
     }
     private void EnableRotation(CubeFace cubeFace){
         switch(cubeFace){
@@ -472,7 +475,7 @@ public class RubiksCubeVisual : MonoBehaviour{
         }
         currentRotationTime = 0;
         currentRotation = 0;
-        isRotating = true;
+        IsRotating = true;
     }
 
     private void SetDefaultPosition(List<GameObject> elements){
@@ -503,12 +506,12 @@ public class RubiksCubeVisual : MonoBehaviour{
     }
 
     private void Update(){
-        if(isRotating){
+        if(IsRotating){
             currentRotationTime += Time.deltaTime;
             float currentRotationProgress = rotateAnimationCurve.Evaluate(currentRotationTime / rotationDuration);
 
             if(currentRotationProgress >= 1){
-                isRotating = false;
+                IsRotating = false;
                 SetDefaultPosition(currentRotatingElements);
                 UpdateVisual(currentRotatingFace);
             }

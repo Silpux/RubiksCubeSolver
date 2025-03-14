@@ -6,6 +6,13 @@ public class ColorElement : MonoBehaviour{
 
     public RubiksCubeVisual Visual{private get; set;}
 
+    [SerializeField] private float highlightDarkFactor;
+
+    private Material defaultMaterial;
+
+    private MeshRenderer meshRenderer;
+
+    private bool isHighlight;
 
     public List<(Vector3 direction, CubeFace cubeFace, bool clockwise)> RotateDirections{
         get;
@@ -19,12 +26,30 @@ public class ColorElement : MonoBehaviour{
 
     private void Awake(){
         RotateDirections = new List<(Vector3 direction, CubeFace cubeFace, bool clockwise)>();
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public void DoMove(Vector3 direction){
         var item = RotateDirections.FirstOrDefault(x => x.direction == direction);
         if(item.direction != Vector3.zero){
             Visual.DoRotation(item.cubeFace, item.clockwise);
+        }
+    }
+
+    public void Highlight(){
+        if(!isHighlight && !Visual.IsRotating){
+            defaultMaterial = new Material(meshRenderer.material);
+            Material newMaterial = new Material(meshRenderer.material);
+            newMaterial.color *= highlightDarkFactor;
+            meshRenderer.material = newMaterial;
+            isHighlight = true;
+        }
+    }
+
+    public void Lowlight(){
+        if(isHighlight && !Visual.IsRotating){
+            meshRenderer.material = defaultMaterial;
+            isHighlight = false;
         }
     }
 

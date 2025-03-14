@@ -65,8 +65,10 @@ public class CameraInputHandler : MonoBehaviour{
 
             if(hitInfo.collider.gameObject.TryGetComponent<ColorElement>(out ColorElement colorElement)){
                 currentColorElement = colorElement;
+                currentColorElement.Highlight();
             }
             else{
+                currentColorElement.Lowlight();
                 currentColorElement = null;
             }
 
@@ -123,8 +125,11 @@ public class CameraInputHandler : MonoBehaviour{
                 }
 
                 if(currentColorElement != null){
+                    currentColorElement.Lowlight();
                     currentColorElement.DoMove(resultDirection);
                 }
+
+                isHoldingCube = false;
 
             }
 
@@ -135,5 +140,8 @@ public class CameraInputHandler : MonoBehaviour{
     private void MouseClickCanceled(InputAction.CallbackContext ctx){
         isDragging = false;
         isHoldingCube = false;
+        if(currentColorElement != null){
+            currentColorElement.Lowlight();
+        }
     }
 }
