@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02588352733c3e5459e4640b0cb74bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radiusToMove: 100
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,7 +543,7 @@ MonoBehaviour:
   elementScale: 1
   colorElementSide: 0.9
   colorElementThickness: 0.01
-  rotationDuration: 1
+  rotationDuration: 0.2
   rotateAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -567,6 +568,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  colorElementPrefab: {fileID: 4815922220280328223, guid: a47f3bc3a43e24746b9dd7ba0131c31a, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

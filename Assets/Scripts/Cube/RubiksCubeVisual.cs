@@ -20,6 +20,8 @@ public class RubiksCubeVisual : MonoBehaviour{
     [SerializeField] private float rotationDuration;
     [SerializeField] private AnimationCurve rotateAnimationCurve;
 
+    [SerializeField] private ColorElement colorElementPrefab;
+
     private const string CUBE_LAYER_NAME = "Cube";
 
     private float currentRotationTime;
@@ -121,40 +123,40 @@ public class RubiksCubeVisual : MonoBehaviour{
 
                     if(i == -1){
                         leftElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
-                        collider.center = new Vector3(collider.center.x - colorElementThickness / 4, collider.center.y, collider.center.z);
+                        //collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
+                        //collider.center = new Vector3(collider.center.x - colorElementThickness / 4, collider.center.y, collider.center.z);
                         sb.Append(" Left");
                     }
                     else if(i == 1){
                         rightElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
-                        collider.center = new Vector3(collider.center.x + colorElementThickness / 4, collider.center.y, collider.center.z);
+                        //collider.size = new Vector3(collider.size.x + colorElementThickness / 2, collider.size.y, collider.size.z);
+                        //collider.center = new Vector3(collider.center.x + colorElementThickness / 4, collider.center.y, collider.center.z);
                         sb.Append(" Right");
                     }
 
                     if(j == -1){
                         downElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
-                        collider.center = new Vector3(collider.center.x, collider.center.y - colorElementThickness / 4, collider.center.z);
+                        //collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
+                        //collider.center = new Vector3(collider.center.x, collider.center.y - colorElementThickness / 4, collider.center.z);
                         sb.Append(" Down");
                     }
                     else if(j == 1){
                         upElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
-                        collider.center = new Vector3(collider.center.x, collider.center.y + colorElementThickness / 4, collider.center.z);
+                        //collider.size = new Vector3(collider.size.x, collider.size.y + colorElementThickness / 2, collider.size.z);
+                        //collider.center = new Vector3(collider.center.x, collider.center.y + colorElementThickness / 4, collider.center.z);
                         sb.Append(" Up");
                     }
 
                     if(k == -1){
                         frontElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
-                        collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z - colorElementThickness / 4);
+                        //collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
+                        //collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z - colorElementThickness / 4);
                         sb.Append(" Front");
                     }
                     else if(k == 1){
                         backElements.Add(cube);
-                        collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
-                        collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z + colorElementThickness / 4);
+                        //collider.size = new Vector3(collider.size.x, collider.size.y, collider.size.z + colorElementThickness / 2);
+                        //collider.center = new Vector3(collider.center.x, collider.center.y, collider.center.z + colorElementThickness / 4);
                         sb.Append(" Back");
                     }
 
@@ -166,25 +168,40 @@ public class RubiksCubeVisual : MonoBehaviour{
 
         void AddColorElement(GameObject cube, (CubeFace cubeFace, int row, int col) cubePlace, Vector3 position, Vector3 scale){
 
-            GameObject colorElement = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            colorElement.transform.position = position;
+            ColorElement colorElement = Instantiate(colorElementPrefab, position, Quaternion.identity, cube.transform);
+            colorElement.Visual = this;
             colorElement.transform.localScale = scale;
             MeshRenderer meshRenderer = colorElement.GetComponent<MeshRenderer>();
             meshRenderer.material = GetFaceMaterial(cubePlace.cubeFace);
-            colorElement.transform.SetParent(cube.transform);
             colorElement.transform.name = cubePlace.cubeFace.ToString();
             colorElements[(int)cubePlace.cubeFace, cubePlace.row, cubePlace.col] = meshRenderer;
 
-            colorElement.layer = LayerMask.NameToLayer(CUBE_LAYER_NAME);
+            colorElement.gameObject.layer = LayerMask.NameToLayer(CUBE_LAYER_NAME);
 
             updateColorElements[(int)cubePlace.cubeFace].Add(cubePlace);
 
             switch(cubePlace.cubeFace){
                 case CubeFace.Left:
-                    if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
-                    else if(cubePlace.row == 2) updateColorElements[(int)CubeFace.Down].Add(cubePlace);
-                    if(cubePlace.col == 0) updateColorElements[(int)CubeFace.Back].Add(cubePlace);
-                    else if(cubePlace.col == 2) updateColorElements[(int)CubeFace.Front].Add(cubePlace);
+                    if(cubePlace.row == 0){
+                        updateColorElements[(int)CubeFace.Up].Add(cubePlace);
+                        colorElement.RotateDirections.Add((new Vector3(0,0,-1), CubeFace.Up, false));
+                        colorElement.RotateDirections.Add((new Vector3(0,0,1), CubeFace.Up, true));
+                    }
+                    else if(cubePlace.row == 2){
+                        updateColorElements[(int)CubeFace.Down].Add(cubePlace);
+                        colorElement.RotateDirections.Add((new Vector3(0,0,-1), CubeFace.Down, true));
+                        colorElement.RotateDirections.Add((new Vector3(0,0,1), CubeFace.Down, false));
+                    }
+                    if(cubePlace.col == 0){
+                        updateColorElements[(int)CubeFace.Back].Add(cubePlace);
+                        colorElement.RotateDirections.Add((new Vector3(0,-1,0), CubeFace.Back, true));
+                        colorElement.RotateDirections.Add((new Vector3(0,1,0), CubeFace.Back, false));
+                    }
+                    else if(cubePlace.col == 2){
+                        updateColorElements[(int)CubeFace.Front].Add(cubePlace);
+                        colorElement.RotateDirections.Add((new Vector3(0,-1,0), CubeFace.Front, false));
+                        colorElement.RotateDirections.Add((new Vector3(0,1,0), CubeFace.Front, true));
+                    }
                     break;
                 case CubeFace.Front:
                     if(cubePlace.row == 0) updateColorElements[(int)CubeFace.Up].Add(cubePlace);
@@ -370,8 +387,42 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     }
 
+    public void DoRotation(CubeFace cubeFace, bool clockwise){
+        if(!isRotating){
+            targetRotationAngle = clockwise ? 90f : -90f;
+            EnableRotation(cubeFace);
+            cube.DoRotation(cubeFace, clockwise ? 1 : -1);
+            currentRotatingFace = cubeFace;
+        }
+    }
+
     private void EnableRotation(List<GameObject> elements){
         currentRotatingElements = elements;
+        currentRotationTime = 0;
+        currentRotation = 0;
+        isRotating = true;
+    }
+    private void EnableRotation(CubeFace cubeFace){
+        switch(cubeFace){
+            case CubeFace.Left:
+                currentRotatingElements = leftElements;
+                break;
+            case CubeFace.Right:
+                currentRotatingElements = rightElements;
+                break;
+            case CubeFace.Up:
+                currentRotatingElements = upElements;
+                break;
+            case CubeFace.Down:
+                currentRotatingElements = downElements;
+                break;
+            case CubeFace.Front:
+                currentRotatingElements = frontElements;
+                break;
+            case CubeFace.Back:
+                currentRotatingElements = backElements;
+                break;
+        }
         currentRotationTime = 0;
         currentRotation = 0;
         isRotating = true;

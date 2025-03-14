@@ -17,6 +17,8 @@ public class CameraInputHandler : MonoBehaviour{
     private Vector3 planeNormal;
     private Vector3 initialClickPosition;
 
+    private ColorElement currentColorElement;
+
     public event Action<Vector2> OnCameraMove;
     public event Action<int> OnZoom;
 
@@ -60,6 +62,10 @@ public class CameraInputHandler : MonoBehaviour{
 
             planeNormal = hitInfo.normal;
             initialClickPosition = hitInfo.point;
+
+            if(hitInfo.collider.gameObject.TryGetComponent<ColorElement>(out ColorElement colorElement)){
+                currentColorElement = colorElement;
+            }
 
         }
         else{
@@ -113,7 +119,9 @@ public class CameraInputHandler : MonoBehaviour{
                     resultDirection = new Vector3(0,0,Mathf.Sign(intersectPoint.z));
                 }
 
-                Debug.Log(resultDirection);
+                if(currentColorElement != null){
+                    currentColorElement.DoMove(resultDirection);
+                }
 
             }
 
