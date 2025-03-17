@@ -20,6 +20,53 @@ public class RubiksCube{
         };
     }
 
+    public string GetStateString(){
+        StringBuilder sb = new StringBuilder(54);
+
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Up, i,j]));
+            }
+        }
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Right, i,j]));
+            }
+        }
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Front, i,j]));
+            }
+        }
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Down, i,j]));
+            }
+        }
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Left, i,j]));
+            }
+        }
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                sb.Append(CubeColorToChar(this[CubeFace.Back, i,j]));
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private char CubeColorToChar(CubeColor cc) => cc switch{
+        CubeColor.White => 'U',
+        CubeColor.Yellow => 'D',
+        CubeColor.Green => 'F',
+        CubeColor.Blue => 'B',
+        CubeColor.Red => 'R',
+        CubeColor.Orange => 'L',
+        _ => throw new Exception()
+    };
+
     public RubiksCube(){
 
         for(int i = 0;i<6;i++){
@@ -88,6 +135,8 @@ public class RubiksCube{
             cubeState[(int)group[i,3].cubeFace, group[i,3].row, group[i,3].col] = cubeColors[(3 + rotations) % 4];
 
         }
+
+        Debug.Log(GetStateString());
 
     }
 
