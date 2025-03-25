@@ -6,9 +6,9 @@ using UnityEngine;
 public class RubiksCube{
 
     private Dictionary<CubeFace, (CubeFace, int, int)[,]> groups = new();
-    private CubeColor[,,] cubeState = new CubeColor[6,3,3];
+    private CubeFace[,,] cubeState = new CubeFace[6,3,3];
 
-    public CubeColor this[CubeFace cubeFace, int row, int col]{
+    public CubeFace this[CubeFace cubeFace, int row, int col]{
         get => cubeState[(int)cubeFace, row, col];
     }
 
@@ -57,13 +57,13 @@ public class RubiksCube{
         return sb.ToString();
     }
 
-    private char CubeColorToChar(CubeColor cc) => cc switch{
-        CubeColor.White => 'U',
-        CubeColor.Yellow => 'D',
-        CubeColor.Green => 'F',
-        CubeColor.Blue => 'B',
-        CubeColor.Red => 'R',
-        CubeColor.Orange => 'L',
+    private char CubeColorToChar(CubeFace cc) => cc switch{
+        CubeFace.Up => 'U',
+        CubeFace.Down => 'D',
+        CubeFace.Front => 'F',
+        CubeFace.Back => 'B',
+        CubeFace.Right => 'R',
+        CubeFace.Left => 'L',
         _ => throw new Exception()
     };
 
@@ -73,7 +73,7 @@ public class RubiksCube{
 
             for(int j = 0;j<3;j++){
                 for(int k = 0;k<3;k++){
-                    cubeState[i,j,k] = GetCubeColor((CubeFace)i);
+                    cubeState[i,j,k] = (CubeFace)i;
                 }
             }
 
@@ -122,7 +122,7 @@ public class RubiksCube{
 
         for(int i = 0;i<5;i++){
 
-            Span<CubeColor> cubeColors = stackalloc CubeColor[4]{
+            Span<CubeFace> cubeColors = stackalloc CubeFace[4]{
                 cubeState[(int)group[i,2].cubeFace, group[i,2].row, group[i,2].col],
                 cubeState[(int)group[i,3].cubeFace, group[i,3].row, group[i,3].col],
                 cubeState[(int)group[i,0].cubeFace, group[i,0].row, group[i,0].col],
@@ -221,18 +221,6 @@ public class RubiksCube{
             Debug.Log(sb.ToString());
         }
 
-    }
-
-    private CubeColor GetCubeColor(CubeFace cubeFace){
-        return cubeFace switch{
-            CubeFace.Left => CubeColor.Orange,
-            CubeFace.Front => CubeColor.Green,
-            CubeFace.Right => CubeColor.Red,
-            CubeFace.Back => CubeColor.Blue,
-            CubeFace.Up => CubeColor.White,
-            CubeFace.Down => CubeColor.Yellow,
-            _ => throw new ArgumentException("Wrong cubeFace parameter", nameof(cubeFace)),
-        };
     }
 
 }

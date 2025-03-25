@@ -357,15 +357,15 @@ public class RubiksCubeVisual : MonoBehaviour{
         };
     }
 
-    private Material GetColorMaterial(CubeColor cubeColor){
-        return cubeColor switch{
-            CubeColor.Orange => leftMaterial,
-            CubeColor.Green => frontMaterial,
-            CubeColor.Red => rightMaterial,
-            CubeColor.Blue => backMaterial,
-            CubeColor.White => upMaterial,
-            CubeColor.Yellow => downMaterial,
-            _ => throw new ArgumentException("Wrong cube color paramter", nameof(cubeColor))
+    private Material GetColorMaterial(CubeFace cubeFace){
+        return cubeFace switch{
+            CubeFace.Left => leftMaterial,
+            CubeFace.Front => frontMaterial,
+            CubeFace.Right => rightMaterial,
+            CubeFace.Back => backMaterial,
+            CubeFace.Up => upMaterial,
+            CubeFace.Down => downMaterial,
+            _ => throw new ArgumentException("Wrong cube color paramter", nameof(cubeFace))
         };
     }
 
