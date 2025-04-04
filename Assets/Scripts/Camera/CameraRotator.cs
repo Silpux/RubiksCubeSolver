@@ -45,7 +45,7 @@ public class CameraRotator : MonoBehaviour{
 
         distanceFromCenter -= zoom / 2f;
         distanceFromCenter = Mathf.Clamp(distanceFromCenter, minDistanceFromCenter, maxDistanceFromCenter);
-        transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter);
+        transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter) - (cameraInputHandler.IsSideView ? transform.right * distanceFromCenter / 2 : Vector3.zero);
 
     }
 
@@ -67,7 +67,7 @@ public class CameraRotator : MonoBehaviour{
         verticalAngle = newVerticalAngle;
 
         transform.rotation = rotationY * rotationX * transform.rotation;
-        transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter);
+        transform.position = transform.rotation * new Vector3(0, 0, -distanceFromCenter) - (cameraInputHandler.IsSideView ? transform.right * distanceFromCenter / 2 : Vector3.zero);
     }
 
 }

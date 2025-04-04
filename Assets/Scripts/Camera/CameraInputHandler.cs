@@ -10,12 +10,14 @@ public class CameraInputHandler : MonoBehaviour{
     private bool isDragging;
     private bool isHoldingCube;
 
-    [SerializeField] private float radiusToMove;
+    [SerializeField] private float mouseRadiusToPerformMove;
 
     private Vector2 startMoveClickCoords;
 
     private Vector3 planeNormal;
     private Vector3 initialClickPosition;
+
+    public bool IsSideView{get; set;} = true;
 
     private ColorElement currentColorElement;
 
@@ -97,7 +99,7 @@ public class CameraInputHandler : MonoBehaviour{
 
             Vector2 screenPosition = Pointer.current.position.ReadValue();
 
-            if(Vector2.Distance(startMoveClickCoords, screenPosition) > radiusToMove){
+            if(Vector2.Distance(startMoveClickCoords, screenPosition) > mouseRadiusToPerformMove){
 
                 Ray ray = Camera.main.ScreenPointToRay(screenPosition);
 

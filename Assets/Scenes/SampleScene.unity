@@ -286,7 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02588352733c3e5459e4640b0cb74bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radiusToMove: 20
+  mouseRadiusToPerformMove: 20
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
