@@ -10,7 +10,41 @@ public static class AlgorithmsTests{
         PerformRandomOptimizationTests(1000, 1000);
         PerformRandomNormalizationTests(1000, 1000);
         PerformScrambleGenerationTests(1000, 1000);
+        PerformRandomInverseTests(1000, 1000);
         PerformValidationTests();
+
+    }
+
+    public static void PerformRandomInverseTests(int testsCount, int algorithmLength){
+
+        Debug.Log($"Inverse testing");
+
+        RubiksCube rc = new RubiksCube();
+
+        int failedTests = 0;
+
+        for(int i = 1;i<=testsCount;i++){
+
+            string original = Algorithms.GenerateScramble(algorithmLength);
+            string inverse = Algorithms.InverseAlgorithm(original);
+
+            rc.ApplyRotationSequence(original);
+            rc.ApplyRotationSequence(inverse);
+
+            if(!rc.IsSolved){
+                Debug.LogError($"Sequence is not inverse!\n{original} => {inverse}");
+                failedTests++;
+                rc.Reset();
+            }
+
+        }
+
+        if(failedTests > 0){
+            Debug.Log($"<color=#FF0000>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
 
     }
 

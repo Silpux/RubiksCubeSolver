@@ -200,5 +200,30 @@ public static class Algorithms{
         return true;
     }
 
+    public static string InverseAlgorithm(string sequence){
+        string[] tokens = Algorithms.NormalizeAlgorithm(sequence).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        List<string> inverse = new List<string>();
+
+        for(int i = tokens.Length-1;i>=0;i--){
+            inverse.Add(InvertMove(tokens[i]));
+        }
+
+        return string.Join(" ", inverse);
+    }
+
+    private static string InvertMove(string move){
+        char face = move[0];
+        string suffix = move.Length > 1 ? move.Substring(1) : "";
+
+        return suffix switch{
+            "" => face + "'",
+            "'" => face.ToString(),
+            "2" => face + "2",
+            _ => throw new FormatException($"Invalid move: {move}")
+        };
+    }
+
+
 
 }

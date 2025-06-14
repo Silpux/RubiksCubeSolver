@@ -80,6 +80,20 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
             thread.Start();
             EditorApplication.update += CheckTaskCompletion;
         }
+
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Random Inverse Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformRandomInverseTests(1000, 1000);
+                taskCompleted = true;
+            });
+            thread.Start();
+            EditorApplication.update += CheckTaskCompletion;
+        }
+
         EditorGUILayout.Separator();
 
         if(GUILayout.Button("Run Validation Tests")){
