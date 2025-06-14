@@ -16,19 +16,80 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
 
         GUI.enabled = !isRunning;
 
-        if(GUILayout.Button("Run Tests")){
-
+        if(GUILayout.Button("Run All Tests")){
             isRunning = true;
             taskCompleted = false;
-
             Thread thread = new Thread(() => {
-
                 AlgorithmsTests.PerformTests();
-
                 taskCompleted = true;
             });
             thread.Start();
 
+            EditorApplication.update += CheckTaskCompletion;
+        }
+
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Optimization Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformOptimizationTests();
+                taskCompleted = true;
+            });
+            thread.Start();
+
+            EditorApplication.update += CheckTaskCompletion;
+        }
+
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Random Optimization Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformRandomOptimizationTests(1000, 1000);
+                taskCompleted = true;
+            });
+            thread.Start();
+
+            EditorApplication.update += CheckTaskCompletion;
+        }
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Random Normalization Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformRandomNormalizationTests(1000, 1000);
+                taskCompleted = true;
+            });
+            thread.Start();
+
+            EditorApplication.update += CheckTaskCompletion;
+        }
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Random Scramble Generation Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformScrambleGenerationTests(1000, 1000);
+                taskCompleted = true;
+            });
+            thread.Start();
+            EditorApplication.update += CheckTaskCompletion;
+        }
+        EditorGUILayout.Separator();
+
+        if(GUILayout.Button("Run Validation Tests")){
+            isRunning = true;
+            taskCompleted = false;
+            Thread thread = new Thread(() => {
+                AlgorithmsTests.PerformValidationTests();
+                taskCompleted = true;
+            });
+            thread.Start();
             EditorApplication.update += CheckTaskCompletion;
         }
 

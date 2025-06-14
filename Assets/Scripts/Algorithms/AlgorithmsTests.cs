@@ -7,14 +7,14 @@ public static class AlgorithmsTests{
     public static void PerformTests(){
 
         PerformOptimizationTests();
-        PerformRandomNormalizationTests(1000, 1000);
         PerformRandomOptimizationTests(1000, 1000);
-        ScrambleGenerationTests(1000, 1000);
+        PerformRandomNormalizationTests(1000, 1000);
+        PerformScrambleGenerationTests(1000, 1000);
         PerformValidationTests();
 
     }
 
-    public static void ScrambleGenerationTests(int testsCount, int algorithmLength){
+    public static void PerformScrambleGenerationTests(int testsCount, int algorithmLength){
 
         Debug.Log("Scramble generation testing");
 
