@@ -8,6 +8,92 @@ public static class AlgorithmsTests{
 
         PerformOptimizationTests();
         PerformRandomNormalizationTests(1000, 1000);
+        PerformValidationTests();
+
+    }
+
+    public static void PerformValidationTests(){
+
+        Debug.Log("Validation testing");
+
+        var optimizeTestCases = new Dictionary<string, bool>{
+            { "U U'", true },
+            { "UUUU", true },
+            { "DDDD", true },
+            { "RRRR", true },
+            { "LLLL", true },
+
+            { "", true },
+            { "    ", true },
+            { "\t\t\t\n", true },
+            { "\n\n\n", true },
+            { "\u3000", true },
+
+            { "U\u3000'D   2R   '", true },
+
+            { "U2R2U2", true },
+            { "U'R'U'", true },
+
+            { "'", false },
+            { "2", false },
+            { " '", false },
+            { " 2", false },
+            { " ' ", false },
+            { " 2 ", false },
+            { "' ", false },
+            { "2 ", false },
+
+            { "U2'", false },
+            { "U2  U'D\t\tUU'R2L   2  R2\tRR  '   LLBU     F   ' FF U\tF'LL     2R", true },
+            { "U2  U'D\t\tUU'R2L   2  R2\tRR  '   2LLBU     F   ' FF U\tF'LL     2R", false },
+
+            { "URUL'B2", true },
+            { "U    R    U'    R'", true },
+            { "U 2   R    'U'    L2R'", true },
+            { "U 2\t\t\t   \t\tR   \n\n\n 'U'    L\n\n\n2R'\n\n\n", true },
+            { "\t", true },
+
+            { " R L U\t\t '\n\n  R D\r\r  D \t\t'  R\n ' \tU   R L ", true },
+            { "RLU '   R   D U 2  D2   \tU \t2\t  D\n2 D\t' R'\n UR L", true },
+            { "\nR2LD     'BU'R L ' RL2 R2  L' UB ' D R' L 2\n", true },
+
+            { "UU'U2U2RR'R2R2LL'L2L2DD'D2D2BB'B2B2FF'F2F2", true },
+            { "\r\rU\r\rU\r\r'\r\rU\r\r2\r\rU\r\r2\r\rR\r\rR\r\r'\r\rR\r\r2\r\rR\r\r2\r\rL\r\rL\r\r'\r\rL\r\r2\r\rL\r\r2\r\r", true },
+            { "U\r\rU\r\r'\r\rU\r\r2\r\rU\r\r2\r\rR\r\rR\r\r'\r\rR\r\r2\r\rR\r\r2\r\rL\r\rL\r\r'\r\rL\r\r2\r\rL\r\r2", true },
+            { "\nU\nU\n'\nU\n2\nU\n2\nR\nR'\nR\n2\nR\n2\nL\nL\n'\nL\n2\nL\n2\nD\nD\n'\nD\n2\nD\n2\nB\nB\n'\nB\n2\nB\n2\nF\nF\n'\nF\n2\nF\n2\n", true },
+            { "UU ' U 2 U 2RR 'R 2 R 2 LL ' L  2  L 2    D D ' D 2 D2 B B' B 2 B 2 F F 'F 2 F2", true },
+
+            { " R\n  L '  U  \nB 2  F 2   U '\r\r F \t R'\t", true },
+            { "U\t\t F\t\t2\t\t R U\n\n2 D'\n\n B B\n\n' D U\n\n 2 \n\nR' B' L U R2\t\n\n\tR2 U\n\n' L  \n\n  ' B F F U", true },
+
+            { "R'R'R'2LDLUBFDFDFDFDFD", false },
+            { "R'R'R'LDLUBFDFD'FDFDFD''", false },
+            { "R'R'R'LDLUBFDFD'FDFDFD'' ", false },
+            { "R'R'R'LDLUBFDFD'FDFDFD'2", false },
+            { "R'R'R'LDLUBFDFD'FDFDFD' 2 ", false },
+            { "R'R'R'LDLUBFDFD'FDFDFD'2 ", false },
+            { "R2'R'R'LDLUBFDFD'FDFDFD'2 ", false },
+            { "2R2'R'R'LDLUBFDFD'FDFDFD2 ", false },
+            { "R2'R'R'LDLUBFDFD'FDFDFD2'", false },
+        };
+
+        int passedTests = 0;
+        int failedTests = 0;
+        foreach(var kvp in optimizeTestCases){
+            string input = kvp.Key;
+            bool expected = kvp.Value;
+            bool result = Algorithms.IsValidSequence(input);
+
+            if(result != expected){
+                failedTests++;
+                Debug.LogError($"Input: \"{input}\" → Expected: \"{expected}\" but was \"{result}\"");
+            }
+            else{
+                passedTests++;
+            }
+        }
+
+        Debug.Log($"Passed {passedTests} / {passedTests + failedTests} tests");
 
     }
 
@@ -51,7 +137,7 @@ public static class AlgorithmsTests{
             rc2.ApplyRotationSequence(seqNorm);
 
             if(rc1.State != rc2.State){
-                Debug.Log($"Algorithms are not equal!\n{original} => {seqNorm}");
+                Debug.LogError($"Algorithms are not equal!\n{original} => {seqNorm}");
                 failedTests++;
             }
 
@@ -470,7 +556,7 @@ public static class AlgorithmsTests{
 
             if(optimized != expected){
                 failedTests++;
-                Debug.Log($"Input: \"{input}\" → Expected: \"{expected}\" but was \"{optimized}\"");
+                Debug.LogError($"Input: \"{input}\" → Expected: \"{expected}\" but was \"{optimized}\"");
             }
             else{
                 passedTests++;

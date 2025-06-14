@@ -174,4 +174,31 @@ public static class Algorithms{
         return string.Join(" ", sequence);
     }
 
+
+    public static bool IsValidSequence(string input){
+
+        int i = 0;
+        while(i < input.Length){
+            if("UDLRFB".Contains(input[i])){
+                for(i++; i < input.Length && char.IsWhiteSpace(input[i]); i++);
+                if(i < input.Length){
+                    if(input[i] == '\'' || input[i] == '2'){
+                        i++;
+                    }
+                    else if(!"UDLRFB".Contains(input[i])){
+                        return false;
+                    }
+                }
+            }
+            else if(char.IsWhiteSpace(input[i])){
+                i++;
+            }
+            else{
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
