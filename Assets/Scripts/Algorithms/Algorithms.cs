@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 public static class Algorithms{
@@ -105,5 +106,34 @@ public static class Algorithms{
 
         return string.Join(" ", normalized);
     }
+    public static string RemoveWhiteSpaces(string input){
+        if(input == null){
+            return input!;
+        }
 
+        StringBuilder result = new System.Text.StringBuilder(input.Length);
+        foreach(char c in input){
+            if(!char.IsWhiteSpace(c)){
+                result.Append(c);
+            }
+        }
+        return result.ToString();
+    }
+
+    public static string GenerateScramble(int length){
+
+        string[] faces = { "R", "L", "U", "D", "F", "B" };
+        string[] modifiers = { "", "'", "2" };
+        System.Random rand = new System.Random();
+
+        List<string> sequence = new List<string>();
+
+        for(int i = 0; i < length; i++){
+            string face = faces[rand.Next(faces.Length)];
+            string modifier = modifiers[rand.Next(modifiers.Length)];
+            sequence.Add(face + modifier);
+        }
+
+        return string.Join(" ", sequence);
+    }
 }

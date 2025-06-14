@@ -7,6 +7,57 @@ public static class AlgorithmsTests{
     public static void PerformTests(){
 
         PerformOptimizationTests();
+        PerformRandomNormalizationTests(1000, 1000);
+
+    }
+
+    public static void PerformRandomNormalizationTests(int testsCount, int algorithmLength){
+        
+        Debug.Log($"Normalization testing");
+
+        RubiksCube rc1 = new RubiksCube();
+        RubiksCube rc2 = new RubiksCube();
+
+        int failedTests = 0;
+
+        for(int i = 1;i<=testsCount;i++){
+
+            string original = Algorithms.GenerateScramble(algorithmLength);
+
+            string modified = Algorithms.RemoveWhiteSpaces(original);
+            string seqNorm = Algorithms.NormalizeAlgorithm(modified);
+
+            rc1.ApplyRotationSequence(original);
+            rc2.ApplyRotationSequence(seqNorm);
+
+            if(rc1.State != rc2.State){
+                Debug.Log($"Algorithms are not equal!\n{original} => {seqNorm}");
+                failedTests++;
+            }
+
+        }
+
+        rc1.Reset();
+        rc2.Reset();
+
+        for(int i = 1;i<=testsCount;i++){
+
+            string original = Algorithms.GenerateScramble(algorithmLength);
+
+            string modified = original.Replace(" ", "   ");
+            string seqNorm = Algorithms.NormalizeAlgorithm(modified);
+
+            rc1.ApplyRotationSequence(original);
+            rc2.ApplyRotationSequence(seqNorm);
+
+            if(rc1.State != rc2.State){
+                Debug.Log($"Algorithms are not equal!\n{original} => {seqNorm}");
+                failedTests++;
+            }
+
+        }
+
+        Debug.Log($"Passed {testsCount * 2 - failedTests} / {testsCount * 2} tests");
 
     }
     public static void PerformOptimizationTests(){
