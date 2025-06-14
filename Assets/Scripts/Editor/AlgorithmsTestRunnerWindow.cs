@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
@@ -16,96 +17,13 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
 
         GUI.enabled = !isRunning;
 
-        if(GUILayout.Button("Run All Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformTests();
-                taskCompleted = true;
-            });
-            thread.Start();
-
-            EditorApplication.update += CheckTaskCompletion;
-        }
-
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Optimization Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformOptimizationTests();
-                taskCompleted = true;
-            });
-            thread.Start();
-
-            EditorApplication.update += CheckTaskCompletion;
-        }
-
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Random Optimization Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformRandomOptimizationTests(1000, 1000);
-                taskCompleted = true;
-            });
-            thread.Start();
-
-            EditorApplication.update += CheckTaskCompletion;
-        }
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Random Normalization Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformRandomNormalizationTests(1000, 1000);
-                taskCompleted = true;
-            });
-            thread.Start();
-
-            EditorApplication.update += CheckTaskCompletion;
-        }
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Random Scramble Generation Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformScrambleGenerationTests(1000, 1000);
-                taskCompleted = true;
-            });
-            thread.Start();
-            EditorApplication.update += CheckTaskCompletion;
-        }
-
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Random Inverse Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformRandomInverseTests(1000, 1000);
-                taskCompleted = true;
-            });
-            thread.Start();
-            EditorApplication.update += CheckTaskCompletion;
-        }
-
-        EditorGUILayout.Separator();
-
-        if(GUILayout.Button("Run Validation Tests")){
-            isRunning = true;
-            taskCompleted = false;
-            Thread thread = new Thread(() => {
-                AlgorithmsTests.PerformValidationTests();
-                taskCompleted = true;
-            });
-            thread.Start();
-            EditorApplication.update += CheckTaskCompletion;
-        }
+        DrawTestButton("Run All Tests", AlgorithmsTests.PerformTests);
+        DrawTestButton("Run Optimization Tests", AlgorithmsTests.PerformOptimizationTests);
+        DrawTestButton("Run Random Optimization Tests", () => AlgorithmsTests.PerformRandomOptimizationTests(1000, 1000));
+        DrawTestButton("Run Random Normalization Tests", () => AlgorithmsTests.PerformRandomNormalizationTests(1000, 1000));
+        DrawTestButton("Run Random Scramble Generation Tests", () => AlgorithmsTests.PerformScrambleGenerationTests(1000, 1000));
+        DrawTestButton("Run Random Inverse Tests", () => AlgorithmsTests.PerformRandomInverseTests(1000, 1000));
+        DrawTestButton("Run Validation Tests", AlgorithmsTests.PerformValidationTests);
 
         GUI.enabled = true;
 
@@ -114,7 +32,22 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
         }
 
     }
+    private void DrawTestButton(string label, Action testAction){
+        EditorGUILayout.Separator();
 
+        if(GUILayout.Button(label)){
+            isRunning = true;
+            taskCompleted = false;
+
+            Thread thread = new Thread(() =>{
+                testAction.Invoke();
+                taskCompleted = true;
+            });
+            thread.Start();
+
+            EditorApplication.update += CheckTaskCompletion;
+        }
+    }
     private void CheckTaskCompletion(){
         if(taskCompleted){
             isRunning = false;

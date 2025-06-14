@@ -224,6 +224,24 @@ public static class Algorithms{
         };
     }
 
+    public static int MovesCount(string algorithm){
+        return NormalizeAlgorithm(algorithm).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
 
+    public static int PeriodLength(string algorithm){
+
+        string optimized = Algorithms.Optimize(algorithm);
+
+        RubiksCube rc = new RubiksCube();
+
+        int cycles = 0;
+        do{
+            cycles++;
+            rc.ApplyAlgorithm(optimized);
+        } while(!rc.IsSolved);
+
+        return cycles;
+
+    }
 
 }

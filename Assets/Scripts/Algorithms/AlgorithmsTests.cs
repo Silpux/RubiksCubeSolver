@@ -28,8 +28,8 @@ public static class AlgorithmsTests{
             string original = Algorithms.GenerateScramble(algorithmLength);
             string inverse = Algorithms.InverseAlgorithm(original);
 
-            rc.ApplyRotationSequence(original);
-            rc.ApplyRotationSequence(inverse);
+            rc.ApplyAlgorithm(original);
+            rc.ApplyAlgorithm(inverse);
 
             if(!rc.IsSolved){
                 Debug.LogError($"Sequence is not inverse!\n{original} => {inverse}");
@@ -61,11 +61,11 @@ public static class AlgorithmsTests{
 
             string original = Algorithms.GenerateScramble(algorithmLength);
 
-            rc1.ApplyRotationSequence(original);
+            rc1.ApplyAlgorithm(original);
 
             string optimized = Algorithms.Optimize(original);
 
-            rc2.ApplyRotationSequence(optimized);
+            rc2.ApplyAlgorithm(optimized);
 
             if(rc1.State != rc2.State){
                 Debug.LogError($"Algorithms are not same!\n{original} => {optimized}");
@@ -107,8 +107,8 @@ public static class AlgorithmsTests{
 
             string optimized = Algorithms.Optimize(original);
 
-            rc1.ApplyRotationSequence(original);
-            rc2.ApplyRotationSequence(optimized);
+            rc1.ApplyAlgorithm(original);
+            rc2.ApplyAlgorithm(optimized);
 
             if(rc1.State != rc2.State){
                 Debug.Log($"Algorithms are not equal!\n{original} => {optimized}");
@@ -231,8 +231,8 @@ public static class AlgorithmsTests{
             string modified = Algorithms.RemoveWhiteSpaces(original);
             string seqNorm = Algorithms.NormalizeAlgorithm(modified);
 
-            rc1.ApplyRotationSequence(original);
-            rc2.ApplyRotationSequence(seqNorm);
+            rc1.ApplyAlgorithm(original);
+            rc2.ApplyAlgorithm(seqNorm);
 
             if(rc1.State != rc2.State){
                 Debug.Log($"Algorithms are not equal!\n{original} => {seqNorm}");
@@ -251,8 +251,8 @@ public static class AlgorithmsTests{
             string modified = original.Replace(" ", "   ");
             string seqNorm = Algorithms.NormalizeAlgorithm(modified);
 
-            rc1.ApplyRotationSequence(original);
-            rc2.ApplyRotationSequence(seqNorm);
+            rc1.ApplyAlgorithm(original);
+            rc2.ApplyAlgorithm(seqNorm);
 
             if(rc1.State != rc2.State){
                 Debug.LogError($"Algorithms are not equal!\n{original} => {seqNorm}");

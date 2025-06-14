@@ -222,10 +222,10 @@ public class RubiksCube{
         return matrix;
     }
 
-    public void ApplyRotationSequence(string sequence){
+    public void ApplyAlgorithm(string algorithm){
         
-        sequence = Algorithms.NormalizeAlgorithm(sequence);
-        
+        algorithm = Algorithms.NormalizeAlgorithm(algorithm);
+
         var moveMap = new Dictionary<char, CubeFace>{
             { 'L', CubeFace.Left },
             { 'F', CubeFace.Front },
@@ -235,7 +235,7 @@ public class RubiksCube{
             { 'D', CubeFace.Down }
         };
 
-        string[] moves = sequence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] moves = algorithm.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach(var move in moves){
             if(move.Length == 0) continue;
