@@ -22,7 +22,7 @@ public static class AlgorithmsTests{
 
         for(int i = 1;i<=testsCount;i++){
 
-            string original = Algorithms.GenerateScramble(algorithmLength);
+            string original = Algorithms.GenerateRandomSequence(algorithmLength);
 
             string modified = Algorithms.RemoveWhiteSpaces(original);
             string seqNorm = Algorithms.NormalizeAlgorithm(modified);
@@ -42,7 +42,7 @@ public static class AlgorithmsTests{
 
         for(int i = 1;i<=testsCount;i++){
 
-            string original = Algorithms.GenerateScramble(algorithmLength);
+            string original = Algorithms.GenerateRandomSequence(algorithmLength);
 
             string modified = original.Replace(" ", "   ");
             string seqNorm = Algorithms.NormalizeAlgorithm(modified);

@@ -122,6 +122,43 @@ public static class Algorithms{
 
     public static string GenerateScramble(int length){
 
+        char?[] modifiers = { null, '\'', '2' };
+        List<char> availableFaces = new List<char>(){ 'R', 'L', 'U', 'D', 'F', 'B' };
+
+        Dictionary<char, char> opposites = new Dictionary<char, char>{
+            { 'U', 'D' }, { 'D', 'U' },
+            { 'L', 'R' }, { 'R', 'L' },
+            { 'F', 'B' }, { 'B', 'F' }
+        };
+
+        System.Random rand = new System.Random();
+
+        List<string> sequence = new List<string>();
+
+        for(int i = 0; i < length; i++){
+
+            char face = availableFaces[rand.Next(availableFaces.Count)];
+
+            availableFaces.Remove(face);
+
+            if(i > 0 && opposites[sequence[i-1][0]] != face){
+                availableFaces.Add(sequence[i-1][0]);
+
+                if(i > 1 && opposites[sequence[i-2][0]] == sequence[i-1][0]){
+                    availableFaces.Add(sequence[i-2][0]);
+                }
+            }
+
+            char? modifier = modifiers[rand.Next(modifiers.Length)];
+            sequence.Add(face.ToString() + modifier);
+        }
+
+        return string.Join(" ", sequence);
+    }
+
+    
+    public static string GenerateRandomSequence(int length){
+
         string[] faces = { "R", "L", "U", "D", "F", "B" };
         string[] modifiers = { "", "'", "2" };
         System.Random rand = new System.Random();
@@ -136,4 +173,5 @@ public static class Algorithms{
 
         return string.Join(" ", sequence);
     }
+
 }
