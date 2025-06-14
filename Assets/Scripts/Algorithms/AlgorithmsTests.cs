@@ -8,15 +8,97 @@ public static class AlgorithmsTests{
 
         PerformOptimizationTests();
         PerformRandomNormalizationTests(1000, 1000);
+        PerformRandomOptimizationTests(1000, 1000);
+        ScrambleGenerationTests(1000, 1000);
         PerformValidationTests();
 
     }
 
+    public static void ScrambleGenerationTests(int testsCount, int algorithmLength){
+
+        Debug.Log("Scramble generation testing");
+
+        RubiksCube rc1 = new RubiksCube();
+        RubiksCube rc2 = new RubiksCube();
+
+        int failedTests = 0;
+
+        for(int i = 0;i<testsCount;i++){
+
+            string original = Algorithms.GenerateScramble(algorithmLength);
+
+            rc1.ApplyRotationSequence(original);
+
+            string optimized = Algorithms.Optimize(original);
+
+            rc2.ApplyRotationSequence(optimized);
+
+            if(rc1.State != rc2.State){
+                Debug.LogError($"Algorithms are not same!\n{original} => {optimized}");
+                failedTests++;
+            }
+
+            if(original.Length != optimized.Length){
+                Debug.LogError(original);
+                Debug.LogError(optimized);
+                Debug.LogError("Length of original and optimized algorithms are not same. Difference: " + (original.Length - optimized.Length));
+                failedTests++;
+            }
+
+            rc1.Reset();
+            rc2.Reset();
+
+        }
+
+        if(failedTests > 0){
+            Debug.Log($"<color=#FF0000>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+    }
+
+    public static void PerformRandomOptimizationTests(int testsCount, int algorithmLength){
+
+        Debug.Log($"Random optimization testing");
+
+        RubiksCube rc1 = new RubiksCube();
+        RubiksCube rc2 = new RubiksCube();
+
+        int failedTests = 0;
+
+        for(int i = 1;i<=testsCount;i++){
+
+            string original = Algorithms.GenerateRandomSequence(algorithmLength);
+
+            string optimized = Algorithms.Optimize(original);
+
+            rc1.ApplyRotationSequence(original);
+            rc2.ApplyRotationSequence(optimized);
+
+            if(rc1.State != rc2.State){
+                Debug.Log($"Algorithms are not equal!\n{original} => {optimized}");
+                failedTests++;
+            }
+
+            rc1.Reset();
+            rc2.Reset();
+
+        }
+        
+        if(failedTests > 0){
+            Debug.Log($"<color=#FF0000>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+
+    }
     public static void PerformValidationTests(){
 
         Debug.Log("Validation testing");
 
-        var optimizeTestCases = new Dictionary<string, bool>{
+        var validationTests = new Dictionary<string, bool>{
             { "U U'", true },
             { "UUUU", true },
             { "DDDD", true },
@@ -77,9 +159,9 @@ public static class AlgorithmsTests{
             { "R2'R'R'LDLUBFDFD'FDFDFD2'", false },
         };
 
-        int passedTests = 0;
         int failedTests = 0;
-        foreach(var kvp in optimizeTestCases){
+        int testsCount = validationTests.Count;
+        foreach(var kvp in validationTests){
             string input = kvp.Key;
             bool expected = kvp.Value;
             bool result = Algorithms.IsValidSequence(input);
@@ -88,12 +170,14 @@ public static class AlgorithmsTests{
                 failedTests++;
                 Debug.LogError($"Input: \"{input}\" → Expected: \"{expected}\" but was \"{result}\"");
             }
-            else{
-                passedTests++;
-            }
         }
 
-        Debug.Log($"Passed {passedTests} / {passedTests + failedTests} tests");
+        if(failedTests > 0){
+            Debug.Log($"<color=#FF0000>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
 
     }
 
@@ -143,7 +227,12 @@ public static class AlgorithmsTests{
 
         }
 
-        Debug.Log($"Passed {testsCount * 2 - failedTests} / {testsCount * 2} tests");
+        if(failedTests > 0){
+            Debug.Log($"<color=#00FF00>Passed {testsCount * 2 - failedTests} / {testsCount * 2} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount * 2 - failedTests} / {testsCount * 2} tests</color>");
+        }
 
     }
     public static void PerformOptimizationTests(){
@@ -354,81 +443,24 @@ public static class AlgorithmsTests{
             { "B'", "B'" },
 
             // Order of opposite sides keeps same
-            { "U D", "U D" },
-            { "D U", "D U" },
-            { "U' D", "U' D" },
-            { "D U'", "D U'" },
-            { "U D'", "U D'" },
-            { "D' U", "D' U" },
-            { "U' D'", "U' D'" },
-            { "D' U'", "D' U'" },
-            { "U2 D", "U2 D" },
-            { "D U2", "D U2" },
-            { "U D2", "U D2" },
-            { "D2 U", "D2 U" },
-            { "U2 D'", "U2 D'" },
-            { "D' U2", "D' U2" },
-            { "U' D2", "U' D2" },
-            { "D2 U'", "D2 U'" },
-            { "U2 D2", "U2 D2" },
-            { "D2 U2", "D2 U2" },
-
-            { "R U D", "R U D" },
-            { "R D U", "R D U" },
-            { "R U' D", "R U' D" },
-            { "R D U'", "R D U'" },
-            { "R U D'", "R U D'" },
-            { "R D' U", "R D' U" },
-            { "R U' D'", "R U' D'" },
-            { "R D' U'", "R D' U'" },
-            { "R U2 D", "R U2 D" },
-            { "R D U2", "R D U2" },
-            { "R U D2", "R U D2" },
-            { "R D2 U", "R D2 U" },
-            { "R U2 D'", "R U2 D'" },
-            { "R D' U2", "R D' U2" },
-            { "R U' D2", "R U' D2" },
-            { "R D2 U'", "R D2 U'" },
-            { "R U2 D2", "R U2 D2" },
-            { "R D2 U2", "R D2 U2" },
-
-            { "R L", "R L" },
-            { "L R", "L R" },
-            { "R' L", "R' L" },
-            { "L R'", "L R'" },
-            { "R L'", "R L'" },
-            { "L' R", "L' R" },
-            { "R' L'", "R' L'" },
-            { "L' R'", "L' R'" },
-            { "R2 L", "R2 L" },
-            { "L R2", "L R2" },
-            { "R L2", "R L2" },
-            { "L2 R", "L2 R" },
-            { "R2 L'", "R2 L'" },
-            { "L' R2", "L' R2" },
-            { "R' L2", "R' L2" },
-            { "L2 R'", "L2 R'" },
-            { "R2 L2", "R2 L2" },
-            { "L2 R2", "L2 R2" },
-
-            { "F B", "F B" },
-            { "B F", "B F" },
-            { "F' B", "F' B" },
-            { "B F'", "B F'" },
-            { "F B'", "F B'" },
-            { "B' F", "B' F" },
-            { "F' B'", "F' B'" },
-            { "B' F'", "B' F'" },
-            { "F2 B", "F2 B" },
-            { "B F2", "B F2" },
-            { "F B2", "F B2" },
-            { "B2 F", "B2 F" },
-            { "F2 B'", "F2 B'" },
-            { "B' F2", "B' F2" },
-            { "F' B2", "F' B2" },
-            { "B2 F'", "B2 F'" },
-            { "F2 B2", "F2 B2" },
-            { "B2 F2", "B2 F2" },
+            { "U D", "U D" }, { "R U D", "R U D" }, { "R L", "R L" }, { "F B", "F B" },
+            { "D U", "D U" }, { "R D U", "R D U" }, { "L R", "L R" }, { "B F", "B F" },
+            { "U' D", "U' D" }, { "R U' D", "R U' D" }, { "R' L", "R' L" }, { "F' B", "F' B" },
+            { "D U'", "D U'" }, { "R D U'", "R D U'" }, { "L R'", "L R'" }, { "B F'", "B F'" },
+            { "U D'", "U D'" }, { "R U D'", "R U D'" }, { "R L'", "R L'" }, { "F B'", "F B'" },
+            { "D' U", "D' U" }, { "R D' U", "R D' U" }, { "L' R", "L' R" }, { "B' F", "B' F" },
+            { "U' D'", "U' D'" }, { "R U' D'", "R U' D'" }, { "R' L'", "R' L'" }, { "F' B'", "F' B'" },
+            { "D' U'", "D' U'" }, { "R D' U'", "R D' U'" }, { "L' R'", "L' R'" }, { "B' F'", "B' F'" },
+            { "U2 D", "U2 D" }, { "R U2 D", "R U2 D" }, { "R2 L", "R2 L" }, { "F2 B", "F2 B" },
+            { "D U2", "D U2" }, { "R D U2", "R D U2" }, { "L R2", "L R2" }, { "B F2", "B F2" },
+            { "U D2", "U D2" }, { "R U D2", "R U D2" }, { "R L2", "R L2" }, { "F B2", "F B2" },
+            { "D2 U", "D2 U" }, { "R D2 U", "R D2 U" }, { "L2 R", "L2 R" }, { "B2 F", "B2 F" },
+            { "U2 D'", "U2 D'" }, { "R U2 D'", "R U2 D'" }, { "R2 L'", "R2 L'" }, { "F2 B'", "F2 B'" },
+            { "D' U2", "D' U2" }, { "R D' U2", "R D' U2" }, { "L' R2", "L' R2" }, { "B' F2", "B' F2" },
+            { "U' D2", "U' D2" }, { "R U' D2", "R U' D2" }, { "R' L2", "R' L2" }, { "F' B2", "F' B2" },
+            { "D2 U'", "D2 U'" }, { "R D2 U'", "R D2 U'" }, { "L2 R'", "L2 R'" }, { "B2 F'", "B2 F'" },
+            { "U2 D2", "U2 D2" }, { "R U2 D2", "R U2 D2" }, { "R2 L2", "R2 L2" }, { "F2 B2", "F2 B2" },
+            { "D2 U2", "D2 U2" }, { "R D2 U2", "R D2 U2" }, { "L2 R2", "L2 R2" }, { "B2 F2", "B2 F2" },
 
             { "U U D D", "U2 D2" },
             { "D D U U", "D2 U2" },
@@ -541,7 +573,7 @@ public static class AlgorithmsTests{
 
 
         };
-        int passedTests = 0;
+        int testsCount = optimizeTestCases.Count;
         int failedTests = 0;
         foreach(var kvp in optimizeTestCases){
             string input = kvp.Key;
@@ -558,13 +590,14 @@ public static class AlgorithmsTests{
                 failedTests++;
                 Debug.LogError($"Input: \"{input}\" → Expected: \"{expected}\" but was \"{optimized}\"");
             }
-            else{
-                passedTests++;
-            }
         }
 
-        Debug.Log($"Passed {passedTests} / {passedTests + failedTests} tests");
-
+        if(failedTests > 0){
+            Debug.Log($"<color=#FF0000>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
+        else{
+            Debug.Log($"<color=#00FF00>Passed {testsCount - failedTests} / {testsCount} tests</color>");
+        }
 
     }
 
