@@ -1,0 +1,109 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public static class Algorithms{
+
+    public static string Optimize(string algorithm){
+
+        algorithm = NormalizeAlgorithm(algorithm);
+
+        Dictionary<char, char> opposites = new Dictionary<char, char>{
+            { 'U', 'D' }, { 'D', 'U' },
+            { 'L', 'R' }, { 'R', 'L' },
+            { 'F', 'B' }, { 'B', 'F' }
+        };
+
+        var split = algorithm.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var moves = new List<(char face, int amount)>(split.Length);
+
+        foreach(var move in split){
+
+            (char face, int amount) entry = (move[0], RotationValue(move));
+
+            if(moves.Count == 0){
+                moves.Add(entry);
+                continue;
+            }
+
+            var top = moves[^1];
+
+            if(top.face == entry.face){
+                int sum = (top.amount + entry.amount) % 4;
+                if(sum != 0){
+                    moves[^1] = (entry.face, sum);
+                }
+                else{
+                    moves.RemoveAt(moves.Count - 1);
+                }
+                continue;
+            }
+
+            if(moves.Count > 1){
+
+                var a = top;
+                var b = moves[^2];
+
+                if(a.face == opposites[entry.face] && b.face == entry.face){
+
+                    int faceCount = (entry.amount + b.amount) % 4;
+                    if(faceCount != 0){
+                        moves[^2] = (entry.face, faceCount);
+                    }
+                    else{
+                        moves.RemoveAt(moves.Count - 2);
+                    }
+                    continue;
+
+                }
+            }
+            moves.Add(entry);
+        }
+        return string.Join(" ", moves.Select(x => FormatMove(x.face, x.amount)));
+    }
+
+    private static string FormatMove(char face, int rotation){
+        return rotation == 0 ? "" :
+            rotation == 1 ? face.ToString() :
+            rotation == 2 ? face + "2" :
+            rotation == 3 ? face + "'" : "";
+    }
+
+    private static int RotationValue(string move){
+        return move.Length == 1 ? 1 :
+            move[1] == '\'' ? 3 :
+            move[1] == '2' ? 2 : 0;
+    }
+
+    public static string NormalizeAlgorithm(string input){
+
+        var normalized = new List<string>();
+        int i = 0;
+
+        while(i < input.Length){
+            char c = input[i];
+
+            if("UDLRFB".Contains(c)){
+                for(i++; i < input.Length && char.IsWhiteSpace(input[i]); i++);
+                string move = c.ToString();
+                if(i < input.Length && (input[i] == '\'' || input[i] == '2')){
+                    move += input[i];
+                    i++;
+                }
+                normalized.Add(move);
+                continue;
+            }
+            else if(char.IsWhiteSpace(c)){
+                i++;
+            }
+            else{
+                throw new FormatException($"Invalid character in move sequence: '{c}' at position {i}");
+            }
+
+        }
+
+        return string.Join(" ", normalized);
+    }
+
+}

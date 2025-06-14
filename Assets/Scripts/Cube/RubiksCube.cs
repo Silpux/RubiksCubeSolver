@@ -224,6 +224,8 @@ public class RubiksCube{
 
     public void ApplyRotationSequence(string sequence){
         
+        sequence = Algorithms.NormalizeAlgorithm(sequence);
+        
         var moveMap = new Dictionary<char, CubeFace>{
             { 'L', CubeFace.Left },
             { 'F', CubeFace.Front },
