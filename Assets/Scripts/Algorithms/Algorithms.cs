@@ -256,4 +256,45 @@ public static class Algorithms{
 
     }
 
+    public static string RotateAlgorithm(string algorithm, int y, int x, int z){
+
+        algorithm = NormalizeAlgorithm(algorithm);
+        string[] moves = algorithm.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        x = ((x % 4) + 4) % 4;
+        y = ((y % 4) + 4) % 4;
+        z = ((z % 4) + 4) % 4;
+
+        Dictionary<char, char[]> rotationMaps = new(){
+            ['x'] = new[] { 'F', 'U', 'B', 'D' },
+            ['y'] = new[] { 'F', 'L', 'B', 'R' },
+            ['z'] = new[] { 'U', 'L', 'D', 'R' },
+        };
+
+        for(int i = 0; i < moves.Length; i++){
+
+            string move = moves[i];
+            char face = move[0];
+            string modifier = move.Length > 1 ? move.Substring(1) : "";
+
+            if(face != 'U' && face != 'D'){
+                var map = rotationMaps['y'];
+                face = map[(Array.IndexOf(map, face) + y) % 4];
+            }
+            if(face != 'R' && face != 'L'){
+                var map = rotationMaps['x'];
+                face = map[(Array.IndexOf(map, face) + x) % 4];
+            }
+            if(face != 'F' && face != 'B'){
+                var map = rotationMaps['z'];
+                face = map[(Array.IndexOf(map, face) + z) % 4];
+            }
+
+            moves[i] = face + modifier;
+        }
+
+        return string.Join(" ", moves);
+
+    }
+
 }

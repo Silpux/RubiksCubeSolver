@@ -115,7 +115,7 @@ public class RubiksCube{
     public override bool Equals(object obj){
         if(ReferenceEquals(this, obj)) return true;
         if(obj is null || obj.GetType() != GetType()) return false;
-        return Equals((obj as RubiksCube)!);
+        return Equals(obj as RubiksCube);
     }
 
     public override int GetHashCode(){
