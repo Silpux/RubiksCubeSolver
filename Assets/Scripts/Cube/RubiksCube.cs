@@ -22,10 +22,22 @@ public class RubiksCube{
 
     private const string SOLVED = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
-    public bool IsSolved => State == SOLVED;
+    public bool IsSolved{
+        get{
+            for(int i = 0;i<6;i++){
+                for(int j = 0;j<3;j++){
+                    for(int k = 0;k<3;k++){
+                        if(cubeState[i,j,k] != (CubeFace)i){
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
 
     public void Reset(){
-        
         for(int i = 0;i<6;i++){
             for(int j = 0;j<3;j++){
                 for(int k = 0;k<3;k++){
@@ -72,6 +84,52 @@ public class RubiksCube{
 
             return sb.ToString();
         }
+    }
+
+    public bool Equals(RubiksCube rc){
+
+        if(rc is null) return false;
+
+        for(int i = 0;i<6;i++){
+            for(int j = 0;j<3;j++){
+                for(int k = 0;k<3;k++){
+                    if(rc.cubeState[i,j,k] != cubeState[i,j,k]){
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+
+    }
+
+    public static bool operator ==(RubiksCube l, RubiksCube r){
+        return l.Equals(r);
+    }
+
+    public static bool operator !=(RubiksCube l, RubiksCube r){
+        return !l.Equals(r);
+    }
+
+    public override bool Equals(object obj){
+        if(ReferenceEquals(this, obj)) return true;
+        if(obj is null || obj.GetType() != GetType()) return false;
+        return Equals((obj as RubiksCube)!);
+    }
+
+    public override int GetHashCode(){
+
+        int hash = unchecked((int)2166136261);
+        for(int i = 0;i<6;i++){
+            for(int j = 0;j<3;j++){
+                for(int k = 0;k<3;k++){
+                    hash ^= ((int)cubeState[i,j,k] + 7) * 123456789;
+                    hash *= 16777619;
+                }
+            }
+        }
+        return hash;
     }
 
     private char CubeColorToChar(CubeFace cc) => cc switch{
