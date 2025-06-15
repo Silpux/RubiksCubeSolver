@@ -244,4 +244,16 @@ public static class Algorithms{
 
     }
 
+    public static bool AreEquivalentAlgorithms(string a1, string a2){
+
+        RubiksCube rc1 = new RubiksCube();
+        RubiksCube rc2 = new RubiksCube();
+
+        rc1.ApplyAlgorithm(a1);
+        rc2.ApplyAlgorithm(a2);
+
+        return rc1 == rc2;
+
+    }
+
 }

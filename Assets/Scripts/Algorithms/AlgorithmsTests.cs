@@ -67,7 +67,7 @@ public static class AlgorithmsTests{
 
             rc2.ApplyAlgorithm(optimized);
 
-            if(rc1.State != rc2.State){
+            if(rc1 != rc2){
                 Debug.LogError($"Algorithms are not same!\n{original} => {optimized}");
                 failedTests++;
             }
@@ -110,7 +110,7 @@ public static class AlgorithmsTests{
             rc1.ApplyAlgorithm(original);
             rc2.ApplyAlgorithm(optimized);
 
-            if(rc1.State != rc2.State){
+            if(rc1 != rc2){
                 Debug.Log($"Algorithms are not equal!\n{original} => {optimized}");
                 failedTests++;
             }
@@ -234,7 +234,7 @@ public static class AlgorithmsTests{
             rc1.ApplyAlgorithm(original);
             rc2.ApplyAlgorithm(seqNorm);
 
-            if(rc1.State != rc2.State){
+            if(rc1 != rc2){
                 Debug.Log($"Algorithms are not equal!\n{original} => {seqNorm}");
                 failedTests++;
             }
@@ -254,7 +254,7 @@ public static class AlgorithmsTests{
             rc1.ApplyAlgorithm(original);
             rc2.ApplyAlgorithm(seqNorm);
 
-            if(rc1.State != rc2.State){
+            if(rc1 != rc2){
                 Debug.LogError($"Algorithms are not equal!\n{original} => {seqNorm}");
                 failedTests++;
             }
