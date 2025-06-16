@@ -70,16 +70,6 @@ public class RubiksCube{
         }
     }
 
-    public void Reset(){
-        for(int i = 0;i<6;i++){
-            for(int j = 0;j<3;j++){
-                for(int k = 0;k<3;k++){
-                    cubeState[i,j,k] = (CubeFace)i;
-                }
-            }
-        }
-    }
-
     public string State{
         get{
             StringBuilder sb = new StringBuilder(54);
@@ -116,6 +106,16 @@ public class RubiksCube{
             }
 
             return sb.ToString();
+        }
+    }
+
+    public void Reset(){
+        for(int i = 0;i<6;i++){
+            for(int j = 0;j<3;j++){
+                for(int k = 0;k<3;k++){
+                    cubeState[i,j,k] = (CubeFace)i;
+                }
+            }
         }
     }
 

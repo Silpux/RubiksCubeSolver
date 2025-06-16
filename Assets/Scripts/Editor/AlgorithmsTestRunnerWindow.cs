@@ -1,5 +1,7 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using KociembaSolver;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,6 +26,11 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
         DrawTestButton("Run Random Scramble Generation Tests", () => AlgorithmsTests.PerformScrambleGenerationTests(1000, 1000));
         DrawTestButton("Run Random Inverse Tests", () => AlgorithmsTests.PerformRandomInverseTests(1000, 1000));
         DrawTestButton("Run Validation Tests", AlgorithmsTests.PerformValidationTests);
+
+        RuntimeHelpers.RunClassConstructor(typeof(Kociemba).TypeHandle); // because persistentDataPath has to be accessed from main thread
+        EditorGUILayout.Separator();
+        DrawTestButton("Run All Solver Tests", SolverTests.PerformTests);
+        DrawTestButton("Run Kociemba Method Solver Tests", () => SolverTests.PerformKociembaTests(100));
 
         GUI.enabled = true;
 
