@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using KociembaSolver;
 using UnityEngine;
 
 public class RubiksCube{
@@ -53,6 +54,29 @@ public class RubiksCube{
 
     public CubeFace this[CubeFace cubeFace, int row, int col]{
         get => cubeState[(int)cubeFace, row, col];
+    }
+
+    public bool IsSolvable{
+        get{
+            string state = State;
+
+            int[] count = new int[6];
+            try{
+                for(int i = 0; i < 54; i++){
+                    count[(int)Enum.Parse(typeof(CubeColor), state.Substring(i, 1))]++;
+                }
+                for(int j = 0; j < 6; j++){
+                    if (count[j] != 9){
+                        return false;
+                    }
+                }
+                return new FaceCube(state).ToCubieCube().Verify() == 0;
+            }
+            catch{
+                return false;
+            }
+
+        }
     }
 
     public bool IsSolved{

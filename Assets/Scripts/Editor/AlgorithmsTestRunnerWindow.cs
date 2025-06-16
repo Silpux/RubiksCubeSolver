@@ -29,8 +29,11 @@ public class AlgorithmsTestRunnerWindow : EditorWindow{
 
         RuntimeHelpers.RunClassConstructor(typeof(Kociemba).TypeHandle); // because persistentDataPath has to be accessed from main thread
         EditorGUILayout.Separator();
+        EditorGUILayout.Separator();
+        EditorGUILayout.Separator();
         DrawTestButton("Run All Solver Tests", SolverTests.PerformTests);
         DrawTestButton("Run Kociemba Method Solver Tests", () => SolverTests.PerformKociembaTests(100));
+        DrawTestButton("Run CFOP Method Solver Tests", () => SolverTests.PerformCFOPTests(3000));
 
         GUI.enabled = true;
 
