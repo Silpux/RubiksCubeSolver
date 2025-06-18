@@ -29,10 +29,10 @@ public class ColorElement : MonoBehaviour{
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    public void DoMove(Vector3 direction){
+    public void DoMove(Vector3 direction, bool doubleTurn){
         var item = RotateDirections.FirstOrDefault(x => x.direction == direction);
         if(item.direction != Vector3.zero){
-            Visual.DoRotation(item.cubeFace, item.clockwise);
+            Visual.DoRotation(item.cubeFace, item.clockwise, doubleTurn);
         }
     }
 

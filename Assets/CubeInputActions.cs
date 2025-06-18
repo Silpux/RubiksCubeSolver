@@ -58,7 +58,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -91,10 +91,10 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Sprint"",
+                    ""name"": ""DoubleTurn"",
                     ""type"": ""Button"",
                     ""id"": ""641cd816-40e6-41b4-8c3d-04687c349290"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -313,7 +313,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Sprint"",
+                    ""action"": ""DoubleTurn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -324,7 +324,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Sprint"",
+                    ""action"": ""DoubleTurn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -335,7 +335,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""XR"",
-                    ""action"": ""Sprint"",
+                    ""action"": ""DoubleTurn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1051,7 +1051,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         m_Cube_Jump = m_Cube.FindAction("Jump", throwIfNotFound: true);
         m_Cube_Previous = m_Cube.FindAction("Previous", throwIfNotFound: true);
         m_Cube_Next = m_Cube.FindAction("Next", throwIfNotFound: true);
-        m_Cube_Sprint = m_Cube.FindAction("Sprint", throwIfNotFound: true);
+        m_Cube_DoubleTurn = m_Cube.FindAction("DoubleTurn", throwIfNotFound: true);
         m_Cube_Click = m_Cube.FindAction("Click", throwIfNotFound: true);
         m_Cube_Zoom = m_Cube.FindAction("Zoom", throwIfNotFound: true);
         // UI
@@ -1140,7 +1140,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Cube_Jump;
     private readonly InputAction m_Cube_Previous;
     private readonly InputAction m_Cube_Next;
-    private readonly InputAction m_Cube_Sprint;
+    private readonly InputAction m_Cube_DoubleTurn;
     private readonly InputAction m_Cube_Click;
     private readonly InputAction m_Cube_Zoom;
     public struct CubeActions
@@ -1154,7 +1154,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Cube_Jump;
         public InputAction @Previous => m_Wrapper.m_Cube_Previous;
         public InputAction @Next => m_Wrapper.m_Cube_Next;
-        public InputAction @Sprint => m_Wrapper.m_Cube_Sprint;
+        public InputAction @DoubleTurn => m_Wrapper.m_Cube_DoubleTurn;
         public InputAction @Click => m_Wrapper.m_Cube_Click;
         public InputAction @Zoom => m_Wrapper.m_Cube_Zoom;
         public InputActionMap Get() { return m_Wrapper.m_Cube; }
@@ -1187,9 +1187,9 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
             @Next.started += instance.OnNext;
             @Next.performed += instance.OnNext;
             @Next.canceled += instance.OnNext;
-            @Sprint.started += instance.OnSprint;
-            @Sprint.performed += instance.OnSprint;
-            @Sprint.canceled += instance.OnSprint;
+            @DoubleTurn.started += instance.OnDoubleTurn;
+            @DoubleTurn.performed += instance.OnDoubleTurn;
+            @DoubleTurn.canceled += instance.OnDoubleTurn;
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
@@ -1221,9 +1221,9 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
             @Next.started -= instance.OnNext;
             @Next.performed -= instance.OnNext;
             @Next.canceled -= instance.OnNext;
-            @Sprint.started -= instance.OnSprint;
-            @Sprint.performed -= instance.OnSprint;
-            @Sprint.canceled -= instance.OnSprint;
+            @DoubleTurn.started -= instance.OnDoubleTurn;
+            @DoubleTurn.performed -= instance.OnDoubleTurn;
+            @DoubleTurn.canceled -= instance.OnDoubleTurn;
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
@@ -1419,7 +1419,7 @@ public partial class @CubeInputActions: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnPrevious(InputAction.CallbackContext context);
         void OnNext(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
+        void OnDoubleTurn(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
     }

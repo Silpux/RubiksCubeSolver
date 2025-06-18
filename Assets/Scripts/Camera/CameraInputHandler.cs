@@ -10,6 +10,8 @@ public class CameraInputHandler : MonoBehaviour{
     private bool isDragging;
     private bool isHoldingCube;
 
+    private bool doubleTurnMode = false;
+
     [SerializeField] private float mouseRadiusToPerformMove;
 
     private Vector2 startMoveClickCoords;
@@ -35,6 +37,8 @@ public class CameraInputHandler : MonoBehaviour{
         inputActions.Cube.Click.canceled += MouseClickCanceled;
         inputActions.Cube.Look.performed += Move;
         inputActions.Cube.Zoom.performed += MouseWheel;
+        inputActions.Cube.DoubleTurn.performed += SetDoubleTurn;
+        inputActions.Cube.DoubleTurn.canceled += SetDoubleTurn;
 
         inputActions.Cube.Enable();
 
@@ -46,6 +50,8 @@ public class CameraInputHandler : MonoBehaviour{
         inputActions.Cube.Click.canceled -= MouseClickCanceled;
         inputActions.Cube.Look.performed -= Move;
         inputActions.Cube.Zoom.performed -= MouseWheel;
+        inputActions.Cube.DoubleTurn.performed -= SetDoubleTurn;
+        inputActions.Cube.DoubleTurn.canceled -= SetDoubleTurn;
 
         inputActions.Cube.Disable();
 
@@ -78,6 +84,12 @@ public class CameraInputHandler : MonoBehaviour{
         else{
             isDragging = true;
         }
+
+    }
+
+    private void SetDoubleTurn(InputAction.CallbackContext ctx){
+
+        doubleTurnMode = ctx.ReadValue<float>() > 0f;
 
     }
 
@@ -128,7 +140,7 @@ public class CameraInputHandler : MonoBehaviour{
 
                 if(currentColorElement != null){
                     currentColorElement.Lowlight();
-                    currentColorElement.DoMove(resultDirection);
+                    currentColorElement.DoMove(resultDirection, doubleTurnMode);
                 }
 
                 isHoldingCube = false;
