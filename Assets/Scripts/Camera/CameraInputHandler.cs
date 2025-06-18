@@ -31,7 +31,7 @@ public class CameraInputHandler : MonoBehaviour{
     private Vector3 planeNormal;
     private Vector3 initialClickPosition;
 
-    public bool IsSideView{get; set;} = false;
+    public bool IsSideView{get; set;} = true;
 
     private ColorElement currentColorElement;
 
