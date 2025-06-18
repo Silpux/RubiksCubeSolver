@@ -10,12 +10,29 @@ using System.IO;
 public class MainCanvas : MonoBehaviour{
 
     [SerializeField] private RubiksCubeVisual rubiksCubeVisual;
+    [SerializeField] private CameraInputHandler cameraInputHandler;
 
     [SerializeField] private Toggle kociembaRadioButton;
     [SerializeField] private Toggle cfopRadioButton;
 
-    private void Start(){
+    [SerializeField] private Toggle redPaintToggle;
+    [SerializeField] private Toggle orangePaintToggle;
+    [SerializeField] private Toggle bluePaintToggle;
+    [SerializeField] private Toggle greenPaintToggle;
+    [SerializeField] private Toggle whitePaintToggle;
+    [SerializeField] private Toggle yellowPaintToggle;
 
+    private CubeFace currentPaintColor = CubeFace.Right;
+
+    private bool isPaintMode;
+
+    private void Start(){
+        redPaintToggle.onValueChanged.AddListener(ColorToggle);
+        orangePaintToggle.onValueChanged.AddListener(ColorToggle);
+        greenPaintToggle.onValueChanged.AddListener(ColorToggle);
+        bluePaintToggle.onValueChanged.AddListener(ColorToggle);
+        whitePaintToggle.onValueChanged.AddListener(ColorToggle);
+        yellowPaintToggle.onValueChanged.AddListener(ColorToggle);
     }
 
     private void Awake(){
@@ -26,6 +43,35 @@ public class MainCanvas : MonoBehaviour{
         rubiksCubeVisual.RotationSpeed = speed;
     }
 
+    public void SetPaintMode(){
+        isPaintMode = !isPaintMode;
+        cameraInputHandler.SetPaintMode(isPaintMode);
+    }
+
+    public void ColorToggle(bool toggle){
+
+        if(redPaintToggle.isOn){
+            currentPaintColor = CubeFace.Right;
+        }
+        else if(orangePaintToggle.isOn){
+            currentPaintColor = CubeFace.Left;
+        }
+        else if(greenPaintToggle.isOn){
+            currentPaintColor = CubeFace.Front;
+        }
+        else if(bluePaintToggle.isOn){
+            currentPaintColor = CubeFace.Back;
+        }
+        else if(whitePaintToggle.isOn){
+            currentPaintColor = CubeFace.Up;
+        }
+        else{
+            currentPaintColor = CubeFace.Down;
+        }
+
+        cameraInputHandler.PaintColor = currentPaintColor;
+
+    }
 
     public void SaveCubeState(){
 

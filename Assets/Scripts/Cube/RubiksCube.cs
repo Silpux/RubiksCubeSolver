@@ -54,7 +54,7 @@ public class RubiksCube{
 
     public CubeFace this[CubeFace cubeFace, int row, int col]{
         get => cubeState[(int)cubeFace, row, col];
-        private set => cubeState[(int)cubeFace, row, col] = value;
+        set => cubeState[(int)cubeFace, row, col] = value;
     }
 
     public bool IsSolvable{

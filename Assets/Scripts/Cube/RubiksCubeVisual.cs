@@ -178,6 +178,9 @@ public class RubiksCubeVisual : MonoBehaviour{
             ColorElement colorElement = Instantiate(colorElementPrefab, position, Quaternion.identity, cube.transform);
             colorElement.Visual = this;
             colorElement.transform.localScale = scale;
+
+            colorElement.OnColorChange += (CubeFace newState) => SetColorElement(newState, cubePlace.cubeFace, cubePlace.row, cubePlace.col);
+
             MeshRenderer meshRenderer = colorElement.GetComponent<MeshRenderer>();
 
             Material colorElementMaterial = GetFaceMaterial(cubePlace.cubeFace);
@@ -362,6 +365,11 @@ public class RubiksCubeVisual : MonoBehaviour{
 
         UpdateVisual();
 
+    }
+
+    private void SetColorElement(CubeFace newState, CubeFace cubeFace, int row, int col){
+        cube[cubeFace, row, col] = newState;
+        UpdateVisual();
     }
 
     public void LoadCubeState(string state){

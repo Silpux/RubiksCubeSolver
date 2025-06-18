@@ -13,8 +13,14 @@ public class CameraInputHandler : MonoBehaviour{
     [SerializeField] EventSystem eventSystem;
     private int cubeLayerMask;
 
+    public CubeFace PaintColor{get; set;}
+
+    private bool isPaintMode = false;
+
     private bool isDragging;
     private bool isHoldingCube;
+
+    private bool paintPiece = false;
 
     private bool doubleTurnMode = false;
 
@@ -38,7 +44,15 @@ public class CameraInputHandler : MonoBehaviour{
     }
 
     private void OnEnable(){
+        EnableCubeActions();
+    }
 
+    private void OnDisable(){
+        DisableCubeActions();
+    }
+
+    private void EnableCubeActions(){
+        
         inputActions.Cube.Click.started += MouseClickStarted;
         inputActions.Cube.Click.canceled += MouseClickCanceled;
         inputActions.Cube.Look.performed += Move;
@@ -47,10 +61,9 @@ public class CameraInputHandler : MonoBehaviour{
         inputActions.Cube.DoubleTurn.canceled += SetDoubleTurn;
 
         inputActions.Cube.Enable();
-
     }
 
-    private void OnDisable(){
+    private void DisableCubeActions(){
 
         inputActions.Cube.Click.started -= MouseClickStarted;
         inputActions.Cube.Click.canceled -= MouseClickCanceled;
@@ -63,21 +76,11 @@ public class CameraInputHandler : MonoBehaviour{
 
     }
 
-    private void MouseClickStarted(InputAction.CallbackContext ctx){
+    public void SetPaintMode(bool mode){
+        isPaintMode = mode;
+    }
 
-
-        PointerEventData pointerData = new PointerEventData(eventSystem)
-        {
-            position = Pointer.current.position.ReadValue()
-        };
-
-        List<RaycastResult> results = new List<RaycastResult>();
-        graphicRaycaster.Raycast(pointerData, results);
-
-        if(results.Count > 0){
-            return;
-        }
-
+    private void MouseClickPaintMode(){
 
         Vector2 screenPosition = Pointer.current.position.ReadValue();
         startMoveClickCoords = screenPosition;
@@ -92,14 +95,51 @@ public class CameraInputHandler : MonoBehaviour{
             initialClickPosition = hitInfo.point;
 
             if(hitInfo.collider.gameObject.TryGetComponent<ColorElement>(out ColorElement colorElement)){
+                colorElement.SetColor(PaintColor);
+            }
+
+        }
+        else{
+            isDragging = true;
+        }
+
+    }
+
+    private void MouseClickStarted(InputAction.CallbackContext ctx){
+
+        PointerEventData pointerData = new PointerEventData(eventSystem){
+            position = Pointer.current.position.ReadValue()
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        graphicRaycaster.Raycast(pointerData, results);
+
+        if(results.Count > 0){
+            return;
+        }
+
+        Vector2 screenPosition = Pointer.current.position.ReadValue();
+        startMoveClickCoords = screenPosition;
+
+        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+
+        if(Physics.Raycast(ray, out RaycastHit hitInfo, 50f, cubeLayerMask)){
+
+            isHoldingCube = true;
+
+            planeNormal = hitInfo.normal;
+            initialClickPosition = hitInfo.point;
+            paintPiece = false;
+
+            if(hitInfo.collider.gameObject.TryGetComponent<ColorElement>(out ColorElement colorElement)){
                 currentColorElement = colorElement;
                 currentColorElement.Highlight();
+                paintPiece = true;
             }
             else{
                 currentColorElement.Lowlight();
                 currentColorElement = null;
             }
-
         }
         else{
             isDragging = true;
@@ -159,14 +199,20 @@ public class CameraInputHandler : MonoBehaviour{
                 }
 
                 if(currentColorElement != null){
+                    paintPiece = false;
                     currentColorElement.Lowlight();
-                    currentColorElement.DoMove(resultDirection, doubleTurnMode);
+                    if(!isPaintMode){
+                        currentColorElement.DoMove(resultDirection, doubleTurnMode);
+                    }
                 }
 
                 isHoldingCube = false;
 
             }
 
+        }
+        else{
+            paintPiece = false;
         }
 
     }
@@ -176,6 +222,9 @@ public class CameraInputHandler : MonoBehaviour{
         isHoldingCube = false;
         if(currentColorElement != null){
             currentColorElement.Lowlight();
+            if(isPaintMode && paintPiece){
+                currentColorElement.SetColor(PaintColor);
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using KociembaSolver;
 using UnityEngine;
 
 public class ColorElement : MonoBehaviour{
@@ -13,6 +15,8 @@ public class ColorElement : MonoBehaviour{
     private MeshRenderer meshRenderer;
 
     private bool isHighlight;
+
+    public event Action<CubeFace> OnColorChange = delegate{ };
 
     public List<(Vector3 direction, CubeFace cubeFace, bool clockwise)> RotateDirections{
         get;
@@ -34,6 +38,10 @@ public class ColorElement : MonoBehaviour{
         if(item.direction != Vector3.zero){
             Visual.DoRotation(item.cubeFace, item.clockwise, doubleTurn);
         }
+    }
+
+    public void SetColor(CubeFace newColor){
+        OnColorChange?.Invoke(newColor);
     }
 
     public void Highlight(){
