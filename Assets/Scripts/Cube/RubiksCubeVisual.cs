@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RubiksCubeVisual : MonoBehaviour{
@@ -32,6 +34,7 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     private float targetRotationAngle;
     public bool IsRotating{get; private set;}
+    public bool IsScrambling{get; private set;}
 
     private List<GameObject> upElements;
     private List<GameObject> downElements;
@@ -44,6 +47,9 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     private List<GameObject> currentRotatingElements;
     private CubeFace currentRotatingFace;
+
+    private List<string> currentScrambleAlgorithm;
+    private int currentScrambleMoveIndex;
 
     private Dictionary<List<GameObject>, Vector3> groupAxis;
     private RubiksCube cube;
@@ -442,13 +448,17 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     public void DoRotation(CubeFace cubeFace, bool clockwise, bool doubleTurn){
         if(!IsRotating){
-            int multiplier = clockwise ? 1 : -1;
-            targetRotationAngle = (doubleTurn ? 179.99f : 90f) * multiplier;
-            currentRotationDuration = doubleTurn ? doubleRotationDuration : rotationDuration;
-            EnableRotation(cubeFace);
-            cube.DoRotation(cubeFace, (doubleTurn ? 2 : 1) * multiplier);
-            currentRotatingFace = cubeFace;
+            StartRotation(cubeFace, clockwise, doubleTurn);
         }
+    }
+
+    private void StartRotation(CubeFace cubeFace, bool clockwise, bool doubleTurn){
+        int multiplier = clockwise ? 1 : -1;
+        targetRotationAngle = (doubleTurn ? 179.99f : 90f) * multiplier;
+        currentRotationDuration = doubleTurn ? doubleRotationDuration : rotationDuration;
+        EnableRotation(cubeFace);
+        cube.DoRotation(cubeFace, (doubleTurn ? 2 : 1) * multiplier);
+        currentRotatingFace = cubeFace;
     }
 
     private void EnableRotation(List<GameObject> elements){
@@ -510,15 +520,46 @@ public class RubiksCubeVisual : MonoBehaviour{
         }
     }
 
+    public void PerformScramble(string scramble){
+
+        if(!IsRotating && !IsScrambling){
+            string[] moves = Algorithms.NormalizeAlgorithm(scramble).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if(moves.Length > 0){
+                currentScrambleAlgorithm = moves.ToList();
+                currentScrambleMoveIndex = 0;
+                IsScrambling = true;
+                (CubeFace cubeFace, bool clockwise, bool doubleTurn) = Algorithms.GetMove(currentScrambleAlgorithm[currentScrambleMoveIndex]);
+                StartRotation(cubeFace, clockwise, doubleTurn);
+            }
+        }
+
+    }
+
     private void Update(){
-        if(IsRotating){
+
+        if(IsRotating || IsScrambling){
             currentRotationTime += Time.deltaTime;
             float currentRotationProgress = rotateAnimationCurve.Evaluate(currentRotationTime / currentRotationDuration);
 
             if(currentRotationProgress >= 1){
-                IsRotating = false;
+
                 SetDefaultPosition(currentRotatingElements);
                 UpdateVisual(currentRotatingFace);
+                if(!IsScrambling){
+                    IsRotating = false;
+                }
+                else{
+                    currentScrambleMoveIndex++;
+                    if(currentScrambleMoveIndex >= currentScrambleAlgorithm.Count){
+                        IsRotating = false;
+                        IsScrambling = false;
+                    }
+                    else{
+                        (CubeFace cubeFace, bool clockwise, bool doubleTurn) = Algorithms.GetMove(currentScrambleAlgorithm[currentScrambleMoveIndex]);
+                        StartRotation(cubeFace, clockwise, doubleTurn);
+                    }
+
+                }
             }
             else{
                 float angle = Mathf.Lerp(0f, targetRotationAngle, currentRotationProgress) - currentRotation;

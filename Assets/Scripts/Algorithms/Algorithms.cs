@@ -77,6 +77,42 @@ public static class Algorithms{
             move[1] == '2' ? 2 : 0;
     }
 
+    public static (CubeFace cubeFace, bool clockwise, bool doubleTurn) GetMove(string move){
+
+        if(string.IsNullOrEmpty(move)){
+            return (CubeFace.None, true, false);
+        }
+
+        char faceChar = move[0];
+
+        CubeFace face = faceChar switch{
+            'L' => CubeFace.Left,
+            'F' => CubeFace.Front,
+            'R' => CubeFace.Right,
+            'B' => CubeFace.Back,
+            'U' => CubeFace.Up,
+            'D' => CubeFace.Down,
+            _ => throw new ArgumentException($"Move is not in correct format! \"{move}\"")
+        };
+
+        bool clockwise = true;
+        bool doubleTurn = false;
+
+        if(move.Length > 1){
+            if(move[1] == '\''){
+                clockwise = false;
+            }
+            else if(move[1] == '2'){
+                doubleTurn = true;
+            }
+            else{
+                throw new ArgumentException($"Move is not in correct format! \"{move}\"");
+            }
+        }
+
+        return (face, clockwise, doubleTurn);
+    }
+
     public static string NormalizeAlgorithm(string input){
 
         var normalized = new List<string>();
@@ -201,7 +237,7 @@ public static class Algorithms{
     }
 
     public static string InverseAlgorithm(string sequence){
-        string[] tokens = Algorithms.NormalizeAlgorithm(sequence).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] tokens = NormalizeAlgorithm(sequence).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         List<string> inverse = new List<string>();
 
