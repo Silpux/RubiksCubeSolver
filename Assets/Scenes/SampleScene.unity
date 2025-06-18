@@ -544,6 +544,7 @@ MonoBehaviour:
   colorElementSide: 0.9
   colorElementThickness: 0.01
   rotationDuration: 0.2
+  doubleRotationDuration: 0.3
   rotateAnimationCurve:
     serializedVersion: 2
     m_Curve:
