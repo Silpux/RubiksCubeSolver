@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CameraInputHandler : MonoBehaviour{
 
     private CubeInputActions inputActions;
+
+    [SerializeField] GraphicRaycaster graphicRaycaster;
+    [SerializeField] EventSystem eventSystem;
     private int cubeLayerMask;
 
     private bool isDragging;
@@ -58,6 +64,20 @@ public class CameraInputHandler : MonoBehaviour{
     }
 
     private void MouseClickStarted(InputAction.CallbackContext ctx){
+
+
+        PointerEventData pointerData = new PointerEventData(eventSystem)
+        {
+            position = Pointer.current.position.ReadValue()
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        graphicRaycaster.Raycast(pointerData, results);
+
+        if(results.Count > 0){
+            return;
+        }
+
 
         Vector2 screenPosition = Pointer.current.position.ReadValue();
         startMoveClickCoords = screenPosition;

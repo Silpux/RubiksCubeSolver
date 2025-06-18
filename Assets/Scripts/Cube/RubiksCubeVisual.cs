@@ -19,8 +19,16 @@ public class RubiksCubeVisual : MonoBehaviour{
     [SerializeField] private float colorElementSide;
     [SerializeField] private float colorElementThickness;
 
-    [SerializeField] private float rotationDuration;
-    [SerializeField] private float doubleRotationDuration;
+    private float rotationDuration = 0.2f;
+
+    public float RotationSpeed{
+        get => rotationDuration;
+        set{
+            rotationDuration = Mathf.Lerp(1f, 0.05f, value);
+            doubleRotationDuration = rotationDuration * 1.5f;
+        }
+    }
+    private float doubleRotationDuration = 0.3f;
 
     private float currentRotationDuration;
     [SerializeField] private AnimationCurve rotateAnimationCurve;

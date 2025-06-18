@@ -22,6 +22,10 @@ public class MainCanvas : MonoBehaviour{
         RuntimeHelpers.RunClassConstructor(typeof(Kociemba).TypeHandle); // because persistentDataPath has to be accessed from main thread
     }
 
+    public void SetAnimationSpeed(float speed){
+        rubiksCubeVisual.RotationSpeed = speed;
+    }
+
 
     public void SaveCubeState(){
 
