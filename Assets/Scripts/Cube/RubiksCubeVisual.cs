@@ -364,6 +364,11 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     }
 
+    public void Reset(){
+        cube.Reset();
+        UpdateVisual();
+    }
+
     private Material GetFaceMaterial(CubeFace cubeFace){
         return cubeFace switch{
             CubeFace.Left => leftMaterial,

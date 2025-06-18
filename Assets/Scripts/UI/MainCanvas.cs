@@ -46,6 +46,16 @@ public class MainCanvas : MonoBehaviour{
 
     }
 
+    public void ResetCubeState(){
+
+        if(!rubiksCubeVisual.IsRotating && !rubiksCubeVisual.IsScrambling){
+
+            rubiksCubeVisual.Reset();
+
+        }
+
+    }
+
     public void ScrambleCube(){
         string scramble = Algorithms.GenerateScramble(25);
         rubiksCubeVisual.PerformScramble(scramble);
