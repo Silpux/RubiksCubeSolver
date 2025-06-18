@@ -54,6 +54,8 @@ public class RubiksCubeVisual : MonoBehaviour{
     private Dictionary<List<GameObject>, Vector3> groupAxis;
     private RubiksCube cube;
 
+    public string State => cube.State;
+
     private MeshRenderer[,,] colorElements;
 
     private List<(CubeFace cubeFace, int row, int col)>[] updateColorElements;
