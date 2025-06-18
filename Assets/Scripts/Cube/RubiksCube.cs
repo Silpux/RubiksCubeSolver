@@ -54,6 +54,7 @@ public class RubiksCube{
 
     public CubeFace this[CubeFace cubeFace, int row, int col]{
         get => cubeState[(int)cubeFace, row, col];
+        private set => cubeState[(int)cubeFace, row, col] = value;
     }
 
     public bool IsSolvable{
@@ -211,6 +212,43 @@ public class RubiksCube{
         }
 
     }
+
+    public void SetState(string state){
+
+        if(state.Length != 54){
+            throw new ArgumentException("State string length must be 54!");
+        }
+
+        for(int i = 0;i<state.Length;i++){
+            if(!"UDRLFB".Contains(state[i])){
+                throw new ArgumentException("State can only have 'U', 'D', 'R', 'L', 'F', 'B' characters!");
+            }
+        }
+
+        int idx = 0;
+        for(int i = 0;i<3;i++){
+            for(int j = 0;j<3;j++){
+                this[CubeFace.Up, i,j] = CharToCubeFace(state[idx]);
+                this[CubeFace.Right, i,j] = CharToCubeFace(state[idx + 9]);
+                this[CubeFace.Front, i,j] = CharToCubeFace(state[idx + 18]);
+                this[CubeFace.Down, i,j] = CharToCubeFace(state[idx + 27]);
+                this[CubeFace.Left, i,j] = CharToCubeFace(state[idx + 36]);
+                this[CubeFace.Back, i,j] = CharToCubeFace(state[idx + 45]);
+                idx++;
+            }
+        }
+
+    }
+
+    private CubeFace CharToCubeFace(char face) => face switch{
+        'U' => CubeFace.Up,
+        'D' => CubeFace.Down,
+        'L' => CubeFace.Left,
+        'R' => CubeFace.Right,
+        'F' => CubeFace.Front,
+        'B' => CubeFace.Back,
+        _ => throw new ArgumentException($"Wrong face character! {face}")
+    };
 
     public void DoRotation(CubeFace cubeFace, int rotations){
         rotations = ((rotations % 4) + 4) % 4;

@@ -356,6 +356,14 @@ public class RubiksCubeVisual : MonoBehaviour{
 
     }
 
+    public void LoadCubeState(string state){
+
+        Debug.Log("Cube state: " + state);
+        cube.SetState(state);
+        UpdateVisual();
+
+    }
+
     private Material GetFaceMaterial(CubeFace cubeFace){
         return cubeFace switch{
             CubeFace.Left => leftMaterial,
@@ -513,6 +521,7 @@ public class RubiksCubeVisual : MonoBehaviour{
             }
         }
     }
+
     private void UpdateVisual(CubeFace rotatedCubeFace){
         for(int i = 0;i<updateColorElements[(int)rotatedCubeFace].Count;i++){
             int cubeFace = (int)updateColorElements[(int)rotatedCubeFace][i].cubeFace;
