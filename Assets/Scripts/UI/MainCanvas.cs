@@ -222,4 +222,8 @@ public class MainCanvas : MonoBehaviour{
         }
 
     }
+
+    public void Quit(){
+        Application.Quit();
+    }
 }
