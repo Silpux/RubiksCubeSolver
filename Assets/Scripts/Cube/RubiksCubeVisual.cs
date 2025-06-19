@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RubiksCubeVisual : MonoBehaviour{
 
@@ -18,6 +19,8 @@ public class RubiksCubeVisual : MonoBehaviour{
     [SerializeField] private float elementScale;
     [SerializeField] private float colorElementSide;
     [SerializeField] private float colorElementThickness;
+
+    public event Action<int> OnMoveFinished;
 
     private float rotationDuration = 0.2f;
 
@@ -585,8 +588,10 @@ public class RubiksCubeVisual : MonoBehaviour{
                     if(currentScrambleMoveIndex >= currentScrambleAlgorithm.Count){
                         IsRotating = false;
                         IsScrambling = false;
+                        OnMoveFinished?.Invoke(currentScrambleAlgorithm.Count);
                     }
                     else{
+                        OnMoveFinished?.Invoke(currentScrambleMoveIndex);
                         (CubeFace cubeFace, bool clockwise, bool doubleTurn) = Algorithms.GetMove(currentScrambleAlgorithm[currentScrambleMoveIndex]);
                         StartRotation(cubeFace, clockwise, doubleTurn);
                     }
