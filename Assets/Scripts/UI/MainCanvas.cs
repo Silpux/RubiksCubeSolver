@@ -199,11 +199,21 @@ public class MainCanvas : MonoBehaviour{
             scrambleMode = false;
             string solution = "";
 
+            if(!rubiksCubeVisual.VerifyCube(out string error)){
+                currentAlgorithmText.text = error;
+                return;
+            }
+
             if(kociembaRadioButton.isOn){
                 solution = await Task.Run(() => Kociemba.Solution(rubiksCubeVisual.State));
             }
             else{
                 solution = await Task.Run(() => CFOP.Solution(rubiksCubeVisual.State));
+            }
+
+            if(solution.Length == 0){
+                currentAlgorithmText.text = "Already solved!";
+                return;
             }
 
             currentAlgorithm = solution;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KociembaSolver;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -367,6 +368,59 @@ public class RubiksCubeVisual : MonoBehaviour{
         }
 
         UpdateVisual();
+
+    }
+
+    public bool VerifyCube(out string error){
+
+        string state = cube.State;
+        error = "";
+
+        int[] count = new int[6];
+        try{
+            for(int i = 0; i < 54; i++){
+                count[(int)Enum.Parse(typeof(CubeColor), state.Substring(i, 1))]++;
+            }
+            for(int j = 0; j < 6; j++){
+                if (count[j] != 9){
+                    //U, R, F, D, L, B
+                    string wrongFaceName = j switch{
+                        0 => "White",
+                        1 => "Red",
+                        2 => "Green",
+                        3 => "Yellow",
+                        4 => "Orange",
+                        5 => "Blue",
+                        _ => ""
+                    };
+                    error = $"{wrongFaceName} side pieces amount is not 9!";
+                    return false;
+                }
+            }
+            int checkResult = new FaceCube(state).ToCubieCube().Verify();
+            switch(Math.Abs(checkResult)){
+                case 2:
+                    error = "Edge appeared 0 or 2+ times in cube!";
+                    break;
+                case 3:
+                    error = "One edge is flipped! Cube is not solvable!";
+                    break;
+                case 4:
+                    error = "Corner appeared 0 or 2+ times in cube!";
+                    break;
+                case 5:
+                    error = "Corner orientation sum is not divisible by 3! Cube is not solvable!";
+                    break;
+                case 6:
+                    error = "Corner and edge swaps sum is not even! Cube is not solvable!";
+                    break;
+            }
+            return checkResult == 0;
+        }
+        catch(Exception e){
+            error = e.Message;
+            return false;
+        }
 
     }
 

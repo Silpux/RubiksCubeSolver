@@ -13,7 +13,7 @@ public class CameraInputHandler : MonoBehaviour{
     [SerializeField] EventSystem eventSystem;
     private int cubeLayerMask;
 
-    public CubeFace PaintColor{get; set;}
+    public CubeFace PaintColor{get; set;} = CubeFace.Right;
 
     private bool isPaintMode = false;
 
