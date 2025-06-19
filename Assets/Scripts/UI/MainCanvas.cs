@@ -21,6 +21,9 @@ public class MainCanvas : MonoBehaviour{
 
     private bool scrambleMode = false;
 
+    [SerializeField] private GameObject solveCubeButtons;
+    [SerializeField] private GameObject paintCubeButtons;
+
     [SerializeField] private Toggle kociembaRadioButton;
     [SerializeField] private Toggle cfopRadioButton;
 
@@ -79,16 +82,16 @@ public class MainCanvas : MonoBehaviour{
         currentAlgorithmText.text = sb.ToString();
     }
 
-    private string StripRichTextTags(string input){
-        return Regex.Replace(input, "<.*?>", string.Empty);
-    }
-
     public void SetAnimationSpeed(float speed){
         rubiksCubeVisual.RotationSpeed = speed;
     }
 
     public void SetPaintMode(){
         isPaintMode = !isPaintMode;
+
+        paintCubeButtons.SetActive(isPaintMode);
+        solveCubeButtons.SetActive(!isPaintMode);
+
         cameraInputHandler.SetPaintMode(isPaintMode);
     }
 
